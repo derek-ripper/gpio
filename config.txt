@@ -1,6 +1,6 @@
 # Config file for GPIO cottage monitor
 
-Pi_Name   =  #2@Cottage
+Pi_Name   =    #2@Cottage
 
 ##### Data Path
 DataPath = /home/pi/Documents/
