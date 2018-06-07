@@ -1,4 +1,5 @@
 # Config file for GPIO cottage monitor
+# line to test if change carried thru git hub
 
 Pi_Name   =    #2@Cottage
 
