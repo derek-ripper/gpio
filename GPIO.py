@@ -227,21 +227,28 @@ def MsgEmailKeepAlive(Device):
 class gpio_input_status(object):
 
     #initialise object variables
-    def __init__(self, pin, pout, Device):
+    def __init__(self, pin, pout, Device, NoFault):
         self.AlertSent = False  # Only send for 1st time a change in GPIO pin state
         self.ReScan    = True   # Indicates that the first Alert has been sent
 
-        self.pin  = pin
-        self.pout = pout
-        self.msg  = Device
+        self.pin       = pin
+        self.pout      = pout
+        self.msg       = Device
+        self.FaultTest = NoFault
+        
+        if(self.FaultTest):
+            FaultText = "HIGH"
+        else:    
+            FaultText = "LOW "
+        
         GPIO.setup(self.pin, GPIO.IN)
         GPIO.setup(self.pout,GPIO.OUT)
 
     def check(self):
-        if(GPIO.input(self.pin) == True):
+        if(GPIO.input(self.pin) == self.FaultTest):
             # NO Fault as HIGH on GPIO input pin
             if(self.ReScan == True):
-                lmsg = "BCM Pin\t" + str(self.pin) + "\tis HIGH for " + self.msg + "\t- take no action"
+                lmsg = "BCM Pin\t" + str(self.pin) + "\tis "+FaultText+" for " + self.msg + "\t- take no action"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.LOW)
@@ -251,7 +258,7 @@ class gpio_input_status(object):
         else:
             # Fault detected as LOW on GPIO input pin
             if(self.AlertSent == False):                
-                lmsg = "BCM Pin\t" + str(self.pin) +"\tis LOW  for " + self.msg + "\t- !!!!!send ALERT msg!!!!!"
+                lmsg = "BCM Pin\t" + str(self.pin) +"\tis "+FaultText+" + self.msg + "\t- !!!!!send ALERT msg!!!!!"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.HIGH)
@@ -311,9 +318,9 @@ POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 # NB 1-wire networking for temperature sensors is on BCM pin 22 (Pi pin 15)
 
 ###### Instantiate GPIO checking objects
-chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-BOILER")
-chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" )
-chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE" )
+chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-BOILER",     True)
+chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True)
+chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)
 
 o_LOG.write("Data from Pi device: " + PI_ID )  
 o_LOG.write("Program Name       : " + PROGRAM )  
