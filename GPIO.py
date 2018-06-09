@@ -237,9 +237,9 @@ class gpio_input_status(object):
         self.FaultTest = NoFault
         
         if(self.FaultTest):
-            FaultText = "HIGH"
+            self.FaultText = "HIGH"
         else:    
-            FaultText = "LOW "
+            self.FaultText = "LOW "
         
         GPIO.setup(self.pin, GPIO.IN)
         GPIO.setup(self.pout,GPIO.OUT)
@@ -248,7 +248,7 @@ class gpio_input_status(object):
         if(GPIO.input(self.pin) == self.FaultTest):
             # NO Fault as HIGH on GPIO input pin
             if(self.ReScan == True):
-                lmsg = "BCM Pin\t" + str(self.pin) + "\tis "+FaultText+" for " + self.msg + "\t- take no action"
+                lmsg = "BCM Pin\t" + str(self.pin) + "\tis "+self.FaultText+" for " + self.msg + "\t- take no action"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.LOW)
@@ -258,7 +258,7 @@ class gpio_input_status(object):
         else:
             # Fault detected as LOW on GPIO input pin
             if(self.AlertSent == False):                
-                lmsg = "BCM Pin\t" + str(self.pin) +"\tis "+FaultText+" for "+ self.msg + "\t- !!!!!send ALERT msg!!!!!"
+                lmsg = "BCM Pin\t" + str(self.pin) +"\tis "+self.FaultText+" for "+ self.msg + "\t- !!!!!send ALERT msg!!!!!"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.HIGH)
