@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###############################################################################
-# Program   : GPIO_Mk_4
+# Program   : GPIO.py
 # Created by: Derek Ripper
 # Date      : 16 Jan 2016
 # Modified  : 04 Feb 2016 
@@ -46,11 +46,12 @@
 #     object. Alas looks like this was only a problem with a CTRL-C interupt
 #     ie not in normal running.
 ###############################################################################
-# 12 Apr 2018
+# 12 Apr 2018  Installed at cottage w/c 18 June 2018
+#
 # 1 - Add "read config" file added for Pi name and sensor ID's
 #
-# 2 - debug for random hangs -- Cause was SMTP not returning contrilChange
-#     Fixed by adding smtp timeout of 10 seconds
+# 2 - debug for random hangs -- Cause was SMTP not returning control
+#     Fixed by adding smtp timeout of 10 seconds!
 #
 # 3 - New cable with dupont 2x6 connector at Pi computer end   
 #     "GRD" and LED "ALIVE" leads  moved into this connector
@@ -58,6 +59,12 @@
 # 4 - Removed s/w Pull Up on GPIO Output definition
 #     as class code common for all GPIO scenarios it was applied to sewer sensor
 #     Not wrong but not necessary. Now done in HARDWARE with 10Kohmn resistor
+#
+# 5 - Updated gpio_input_status (the check method) to allow a pin to be defined    
+#     as HIGH or LOW for a fault condition  
+#
+# 6   Code module renamed to GPIO.py - ie have dropped the Version as code
+#     is now in GITHub as at 8 June 2018 (also true for DU.py)
 #
 ###############################################################################
 import os
@@ -236,19 +243,24 @@ class gpio_input_status(object):
         self.msg       = Device
         self.FaultTest = NoFault
         
+        # set appropriate GPIO pin text as we use both conventions
+        # ie Logical 1 may be both OK & NOT OK depending on type of sensor
         if(self.FaultTest):
-            self.FaultText = "HIGH"
+            self.FaultTxtOK     = "HIGH"
+            self.FaultTxtNotOK  = "LOW "           
         else:    
-            self.FaultText = "LOW "
+            self.FaultTxtOK     = "LOW "
+            self.FaultTxtNotOK  = "HIGH"
+
         
         GPIO.setup(self.pin, GPIO.IN)
         GPIO.setup(self.pout,GPIO.OUT)
 
     def check(self):
         if(GPIO.input(self.pin) == self.FaultTest):
-            # NO Fault as HIGH on GPIO input pin
+            # NO Fault condition
             if(self.ReScan == True):
-                lmsg = "BCM Pin\t" + str(self.pin) + "\tis "+self.FaultText+" for " + self.msg + "\t- take no action"
+                lmsg = "BCM Pin\t" + str(self.pin) + "\tis "+self.FaultTxtOK+" for " + self.msg + "\t- take no action"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.LOW)
@@ -256,9 +268,9 @@ class gpio_input_status(object):
                 self.AlertSent = False 
                 self.ReScan    = False
         else:
-            # Fault detected as LOW on GPIO input pin
+            # Fault detected condition
             if(self.AlertSent == False):                
-                lmsg = "BCM Pin\t" + str(self.pin) +"\tis "+self.FaultText+" for "+ self.msg + "\t- !!!!!send ALERT msg!!!!!"
+                lmsg = "BCM Pin\t" + str(self.pin) +"\tis "+self.FaultTxtNotOK+" for "+ self.msg + "\t- !!!!!send ALERT msg!!!!!"
                 o_LOG.write(lmsg)
                 print(lmsg)
                 GPIO.output(self.pout, GPIO.HIGH)
@@ -298,7 +310,7 @@ o_LOG.write("Starting program after a wait of  " + str(wait2start) + " seconds."
 GPIO.setmode(GPIO.BCM)
 
 ##### Set CONSTANTS
-PROGRAM     = "GPIO_Mk_6.py"
+PROGRAM     = "GPIO.py    V6.00"
 PI_ID       = o_cfg.GetConfigValue('Pi_Name')
 poll        = 12     # pollimg interval in seconds
 Ncount      = 0      # Count number of polls
@@ -316,11 +328,13 @@ POUT_X      = 23     # Pi pin 16   SPARE
 POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 
 # NB 1-wire networking for temperature sensors is on BCM pin 22 (Pi pin 15)
+#    As of this version all DS18B20 hex id's  are held in config.txt
+#    and read at runtime.
 
 ###### Instantiate GPIO checking objects
-chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-BOILER",     True)
-chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True)
-chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)
+chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-BOILER",     True) # TRUE  indicates state of pin in NON-FAULT condition = logical 1 or 3v
+chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True) # ditto
+chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 
 o_LOG.write("Data from Pi device: " + PI_ID )  
 o_LOG.write("Program Name       : " + PROGRAM )  
@@ -337,11 +351,11 @@ try:
 		# write temperature readings to log file every hour
         if(int(poll*Ncount) % 3600 == 0 or Ncount == 1):
             OBtemp = str(DU.gettemp("On_Board",o_cfg))  
-            EXtemp = str(DU.gettemp("External",o_cfg))     
             INtemp = str(DU.gettemp("Internal",o_cfg))  
+            EXtemp = str(DU.gettemp("External",o_cfg))  
             o_TempLOG.write("On Board: " + OBtemp +" INtemp: " + INtemp +" EXtemp: " + EXtemp)	
         
-        # ALIVE STILL email - set to 4 hrs (14400 secs)
+        # Periodic I'm "ALIVE" email - set to 4 hrs (14400 secs)
         if(int(poll*Ncount) % 14400 == 0 or Ncount == 1):
             o_LOG.write("Heart Beat - Count = " + str(Ncount)+" Elapsed Time: "+ ElapsedTime)
             SendEMail(MsgEmailKeepAlive(PI_ID),PI_ID + " - is ALIVE!",ElapsedTime)
