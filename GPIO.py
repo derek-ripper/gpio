@@ -78,7 +78,7 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     # Set Constants
     SMTP_SERVER    = 'smtp.gmail.com'
     SMTP_PORT      = 587
-    SMTP_TIMEOUT   = 10
+    SMTP_TIMEOUT   = 60
     EMAIL_USERNAME = 'etrf2me@gmail.com'
     EMAIL_PASSWORD = 'Wi2ard:RmDaTa'
 	
