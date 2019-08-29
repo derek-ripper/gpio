@@ -1,0 +1,11 @@
+#!/bin/bash
+# by     : Derek Ripper
+# created: 29 Aug2019
+# Purpose: To be used by cron job to keep a copy of te current time every one minute.
+#          In the noot sequence in rc.local this is used to write a startup log file 
+#          With boot time and last known time, before p[ower failure say.
+####################################################################################
+]
+DATETIME=`date`
+TARGET='/home/pi/Documents/gpio/spottime.txt'
+echo 'Last Known Time before shutdown: '$DATETIME > $TARGET
