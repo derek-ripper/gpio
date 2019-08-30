@@ -1,0 +1,37 @@
+# Config file for GPIO cottage monitor
+# line to test if change carried thru git hub
+
+Pi_Name   =    #1@Home
+
+##### Data Path
+DataPath = /home/pi/Documents/
+
+######################################################
+### New VERO BOARD Mk 2 with 3 temp sensors
+# "On_Board"  DS18B20 temperature sensor
+#Temp_01  = 28-011612e327ee
+
+# "External"  DS18B20 temperature sensor
+#Temp_02  = 28-011621117dee
+
+# "Internal"  DS18B20 temperature sensor
+#Temp_03  = 28-02161e4015ee
+######################################################
+
+###### HOME sensors  #####
+# based on Breadboard set up
+# On board internal DS18B20 temperature sensor
+Temp_01  = 28-0000073d9052
+
+# External DS18B20 temperature sensor
+Temp_02  = 28-80000028a8a9
+######################################################
+
+######################################################
+##### COTTAGE sensors #####
+# On board internal DS18B20 sensor
+#temp_01  = 28-01161311d3ee
+
+# External DS18B20 sensor
+#temp_02  = 28-8000002896eb
+######################################################
