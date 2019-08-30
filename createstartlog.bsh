@@ -1,0 +1,72 @@
+#!/bin/bash
+# Author    : Derek Ripper
+# Created   : 30 Aug 2019
+# Purpose   : To create afile with the reboot timeand the last known
+#             time when the Pi was live. NB spottime file currenttluy 
+#             updated every minute by a cron job.
+########################################################################
+# Updates:
+
+########################################################################
+### start msg
+echo "### Enter script: $0"
+
+### Location of START up logs
+SRCDIR='/home/pi/Documents/logs/startuplog_'
+SRCEXT='.txt'
+
+### Location of spottime file
+SPOTTIMEFILE='/home/pi/Documents/gpio/spottime.txt'
+
+###Constants
+MAXFILES=10
+DATETIME=`date`
+echo "Date and Time at reboot: $DATETIME"
+MSG='Time at point of  PI re Booting:'
+
+### Test for zero startup files - if none present create one
+
+ls $SRCDIR*$SRCEXT > /dev/null 
+if [ $? -ne 0 ];then
+    NUM=01
+    echo Create an initial startup file
+
+    NEWFILE=$SRCDIR$NUM$SRCEXT
+    echo "newfile; $NEWFILE"
+    echo "$MSG $DATETIME" > $NEWFILE
+
+    if [ -e $SPOTTIMEFILE ]; then
+        cat $SPOTTIMEFILE >> $NEWFILE
+    else
+        echo 'No spottimefile detected' >> $NEWFILE
+    fi
+    exit
+fi
+
+### Find most recent startup file name
+recentstartupfile=`ls -rt $SRCDIR*$SRCEXT | tail -n 1 `
+echo recent $recentstartupfile
+
+### extract file index number
+NUM=`echo $recentstartupfile | cut -c36-37`
+echo "substr: $NUM"
+
+### Increment file number & write new file
+# Remove any prefix ZERO's and convert to base10 !
+NUM=$((10#$NUM + 1))
+
+### Limit maximum number of generated files
+if [ $NUM -gt $MAXFILES ]; then NUM=1; fi
+NEWNUM=`printf "%02d" $NUM`
+echo Current file edition No:  $NEWNUM
+
+###  new file
+NEWFILE="$SRCDIR$NEWNUM$SRCEXT"
+echo new file name: $NEWFILE 
+echo -e "\n$MSG $DATETIME" > $NEWFILE
+cat $SPOTTIMEFILE  >> $NEWFILE
+echo -e            >> $NEWFILE
+
+### Finish msg
+echo "### Exit  script: $0"
+exit 0

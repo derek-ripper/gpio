@@ -6,6 +6,6 @@
 #          With boot time and last known time, before p[ower failure say.
 ####################################################################################
 ]
-DATETIME=`date`
+xDATETIME=`date`
 TARGET='/home/pi/Documents/gpio/spottime.txt'
-echo 'Last Known Time before shutdown: '$DATETIME > $TARGET
+echo 'Last Known Time before shutdown: '$xDATETIME > $TARGET

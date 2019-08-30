@@ -1,7 +1,18 @@
-#!/bin/sh
-
-# Script  to run any .py program and redirect std out & err
+#!/bin/bash
+########################################################################
+# Author   : Derek Ripper
+# Created  : July 2019 'ish for pi monitoring project
+# Purpose  : Script  to run any .py program and redirect std out & err
 echo "##### Start of script ..:" $0
+#
+#Updates
+# 30 Aug 2109 - Add script to craete a start up log.
+#             ie to measure amount of down time after a power
+#             failure.
+#
+#             also: changed shebang to bash script, not sh
+#########################################################################
+
 
 USERPROG=GPIO.py
 ROOTPATH=/home/pi/Documents/
@@ -13,6 +24,11 @@ mkdir  ${LOGSPATH}
 
 STDOUT=${LOGSPATH}stdout.txt
 STDERR=${LOGSPATH}stderr.txt
+
+# NB without "sleep" then the createstartlog.bsh uses the time last 
+#    seen at shutdown!!
+sleep 30 # wait for RTC to catch up!
+
 
 EXT_IP=`curl icanhazip.com`                             1>> $STDOUT  2>>$STDERR   
 
@@ -29,10 +45,13 @@ echo "STD OUT:" $STDOUT
 echo "STD ERR:" $STDERR
 echo " "
 
+
+$PROGPATH'createstartlog.bsh'                            >> $STDOUT
+
 python3 $USERPROG                                        1>> $STDOUT  2>>$STDERR   &
 
-echo " "                                                >> $STDOUT
-echo "##### All Done in script:" $0                     >> $STDOUT
+echo " "                                                 >> $STDOUT
+echo "##### All Done in script:" $0                      >> $STDOUT
 
 echo " "     
 echo "##### All Done in script:" $0   
