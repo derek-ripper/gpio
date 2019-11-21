@@ -26,13 +26,16 @@ if __name__ == '__main__':
 
     DHT_SENSOR = Adafruit_DHT.DHT22
     DHT_PIN    = 4
+    DHT        = humidity()
     
     while True:
-        humid, temp = humidity(DHT_SENSOR,DHT_PIN)
-        print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temperature, humidity))
+    	try:
+	     humid, temp = DHT.read_ht(DHT_SENSOR,DHT_PIN)
+	     print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temp, humid))
 
-    except KeyboardInterrupt:
-        print("\nUser abort with CTRL-C\n")
+    	except KeyboardInterrupt:
+      	    print("\nUser abort with CTRL-C\n")
+      	    exit()
         
         
         
