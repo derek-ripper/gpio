@@ -10,25 +10,29 @@ class humidity(object):
 #############################################################################
 import os
 import sys
+import time as T
 
+# needed to access my other Pyton std. modules
 sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
-import mytimer
+
 if __name__ == '__main__':
 
     DHT_SENSOR = Adafruit_DHT.DHT22
     DHT_PIN    = 4
     DHT        = humidity()
-    TT         = mytimer.timerx()
+
     
     logger = DU.c_logger("/home/pi/dev/gpio/humidity/", "log1.txt")
     
     while True:
         try:
-            TT.waitforme(600)
+            T.sleep(5)
             humid, temp = DHT.read_ht(DHT_SENSOR,DHT_PIN)
+            print(humid)
             print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temp, humid))
             logger.write("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temp, humid))
+        
         except KeyboardInterrupt:
             print("\nUser abort with CTRL-C\n")
             logger.write("\nUser abort with CTRL-C\n")
