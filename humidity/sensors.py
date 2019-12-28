@@ -31,11 +31,20 @@ class humidity(object):
         self.DHT_SENSOR = sensortype
         self.DHT_PIN    = sensorpin
         
-    def read_h(self):
+    def read_dht(self):
         humidity, temperature = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.DHT_PIN)
-        return humidity
+        ##########################################
+        if humidity != None:
+            humidity = round(humidity,2)
+        else:
+            humidity = -99.9
+            
+        ##########################################    
+        if temperature != None:
+            temperature = round(temperature,2)
+        else:
+            temperature = -99.9            
+            
+        return humidity, temperature
         
-    def read_t(self):
-        humidity, temperature = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.DHT_PIN)
-        return temperatute
-    	
+   
