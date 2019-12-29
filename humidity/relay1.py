@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 import sensors as sensor
+import mytimer as T
 
 # needed to access my other Pyton std. modules
 import os, sys
@@ -28,17 +29,18 @@ DHT_SENSOR = 22
 DHT_PIN    = 4
 
 o_HT = sensor.humidity(DHT_SENSOR,DHT_PIN)
+o_T  = T.timer()
 
 def main():
-    PollTime      = 5 *60 #seconds
-    RestTime      = 10*60 #seconds
-    MaxConRunTime = 45*60 #seconds
-
+    PollTime      = 5 *1 #seconds
+    RestTime      = 10*1 #seconds
+    
+    
     OFFcount = 0
     ONcount  = 0
     PollCount= 0
-    OffThres = 45
-    OnThres  = 55
+    OffThres = 40
+    OnThres  = 41
     
     while True: # polling Loop
         PollCount += 1
@@ -49,9 +51,10 @@ def main():
 
         if  hvalue > OnThres:  
             logger.write("Checking continuouis running time")  
-            if ConRunTime > MaxConRunTime:
+            if o_T.elapsedtime > MaxConRunTime:
                 logger.write("Invoking rest time of: "+str(RestTime)) 
                 sleep(RestTime)
+                o_T.resetstarttime()
                 
             ONcount += 1
             logger.write("SWITCHing  ON, count= "+str(ONcount))
