@@ -37,13 +37,13 @@ class humidity(object):
         if humidity != None:
             humidity = round(humidity,2)
         else:
-            humidity = -99.9
+            humidity = 999
             
         ##########################################    
         if temperature != None:
             temperature = round(temperature,2)
         else:
-            temperature = -99.9            
+            temperature = 999            
             
         return humidity, temperature
         

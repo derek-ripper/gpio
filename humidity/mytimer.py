@@ -7,7 +7,7 @@ class timer(object):
         self.resetstarttime()
 
     def elapsedtime(self):
-        self.elasped = self.currenttime() - self.starttime  
+        elasped = self.currenttime() - self.starttime  
         return elasped
         
     def currenttime(self):  
