@@ -46,7 +46,6 @@ def main():
     ONcount  = 0
     PollCount= 0
 
-
     
             
     ### set initial state
@@ -54,8 +53,9 @@ def main():
     o_RL1.switchON()
     ON_FLAG = True
     sleep(InitialOnTime)
+    o_T.resetstarttime()
     
-    ### THE POLLING LOOP    ###
+    ### THE POLLING LOOP  ###
     while True: 
         PollCount += 1
         logger.write("*")
@@ -65,49 +65,50 @@ def main():
         etime = str(round(o_T.elapsedtime(),2)) 
         logger.write("Humidity : "+str(hvalue)+", Temperature: "+str(tvalue)+" Elapased= "+str(etime))
 
-        if  hvalue > OnThres:  
-            logger.write("Checking if continuous running time exceeded of "+str(MaxConRunTime)+" secs.")  
-            logger.write("Elapsed time is: "+str(round(o_T.elapsedtime(),2)) )
-            CheckMaxRunTime(MaxConRunTime, RestTime)
-                
-            if not ON_FLAG:
-                logger.write("SWITCHing  ON for First Time, count= "+str(ONcount))
-                o_T.resetstarttime()
+        if  hvalue > OnThres: 
+            if not ON_FLAG: # 1st time in this section of code
                 ON_FLAG = True
                 ONcount += 1
+                logger.write("SWITCHed  ON, count= "+str(ONcount))
+                o_T.resetstarttime()
                 o_RL1.switchON()
-            else:
-                logger.write("Already SWITCHed ON - in above ON Threshold, count "+str(ONcount))
+            else:          # 2nd or subsequent time in this code section
+                logger.write("SWITCHed  ON")
+                CheckMaxRunTime(MaxConRunTime, RestTime)            
         
         elif hvalue <= OffThres:
-            OFFcount += 1
-            logger.write("SWITCHing OFF, count= "+str(OFFcount))
-            if ON_FLAG :
+            if ON_FLAG : # ie 1st time inhis code section
+                ON_FLAG = False
+                OFFcount += 1                
+                logger.write("SWITCHed OFF, 1st time, count= "+str(OFFcount))
                 o_T.calctotruntime()
+                o_RL1.switchOFF()
                 
-            ON_FLAG = False
-            o_RL1.switchOFF()
-        
+            else:
+                logger.write("SWITCHed OFF")
+    
         else:
-            logger.write("In the MAX to MIN zone ON_FLAG= "+str(ON_FLAG))
+            logger.write("In the MAX to MIN zone ON_FLAG = "+str(ON_FLAG))
             if ON_FLAG:
-                 CheckMaxRunTime(MaxConRunTime, RestTime)
-                 ONcount += 1
-                 o_RL1.switchON()
+                CheckMaxRunTime(MaxConRunTime, RestTime)
+
                     
         sleep(PollTime)
         # End of Polling Loop
         
 def CheckMaxRunTime(MaxConRunTime, RestTime):
         if  o_T.elapsedtime() > MaxConRunTime:
-            logger.write("MAX Continuous runing time reached. Value = "+str(o_T.elapsedtime()) )
+            logger.write("MAX Continuous runing time reached. Value = "+str(round(o_T.elapsedtime(),2)) )
             logger.write("Invoking rest time of: "+str(RestTime)) 
             o_T.calctotruntime()
             sleep(RestTime)
+        else:
+            logger.write("Max run time NOT exceeded")
 
 def destroy():
     o_RL1.switchOFF()
     GPIO.cleanup()
+    print("\nTotal ON time: "+str(round(o_T.gettotruntime(),2) ))
     print("\nAll done in relay\n")
 
 if __name__ == '__main__':
