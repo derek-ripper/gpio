@@ -5,6 +5,7 @@ class timer(object):
 
     def __init__(self):
         self.resetstarttime()
+        self.cumruntime = 0.0
 
     def elapsedtime(self):
         elasped = self.currenttime() - self.starttime  
@@ -16,5 +17,13 @@ class timer(object):
     	  
     def resetstarttime(self):	
     	self.starttime = time.time()
+    	
+    def calctotruntime(self):
+        runningtime = self.elapsedtime()  
+        self.cumruntime = self.cumruntime  + runningtime
+        self.resetstarttime()
+
+    def gettotruntime(self):
+        return self.cumruntime
 
 	    	  
