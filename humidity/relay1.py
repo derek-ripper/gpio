@@ -31,22 +31,22 @@ DHT_PIN    = 4
 o_HT = sensor.humidity(DHT_SENSOR,DHT_PIN)
 o_T  = T.timer()
 
+
 def main():
     ### CONSTANTS
-    MINS2SECS     =  1           # Normally=60, set to 1 for Testing 
+    MINS2SECS     = 60           # Normally=60, set to 1 for Testing 
     InitialOnTime = 20           # seconds
     PollTime      =  5*MINS2SECS # seconds
     RestTime      = 10*MINS2SECS # seconds
-    MaxConRunTime = 15*MINS2SECS # seconds
-    OffThres = 40                # % RH - Threshold to turn OFF power
-    OnThres  = 41                # % RH - Threshold to turn ON  power
+    MaxConRunTime = 45*MINS2SECS # seconds
+    OffThres = 39                # % RH - Threshold to turn OFF power
+    OnThres  = 40                # % RH - Threshold to turn ON  power
     
     ### COUNTERS
     OFFcount = 0
     ONcount  = 0
     PollCount= 0
 
-    
             
     ### set initial state
     logger.write("SWITCHing  ON at START UP and sleeping for "+str(InitialOnTime)+" secs.")
@@ -69,30 +69,30 @@ def main():
             if not ON_FLAG: # 1st time in this section of code
                 ON_FLAG = True
                 ONcount += 1
-                logger.write("SWITCHed  ON, count= "+str(ONcount))
+                logger.write("SWITCHing  ON, count= "+str(ONcount))
                 o_T.resetstarttime()
                 o_RL1.switchON()
             else:          # 2nd or subsequent time in this code section
-                logger.write("SWITCHed  ON")
+                logger.write("State = SWITCHed  ON")
                 CheckMaxRunTime(MaxConRunTime, RestTime)            
         
         elif hvalue <= OffThres:
             if ON_FLAG : # ie 1st time inhis code section
                 ON_FLAG = False
                 OFFcount += 1                
-                logger.write("SWITCHed OFF, 1st time, count= "+str(OFFcount))
+                logger.write("SWITCHing OFF,count= "+str(OFFcount))
                 o_T.calctotruntime()
                 o_RL1.switchOFF()
                 
             else:
-                logger.write("SWITCHed OFF")
+                logger.write("State = SWITCHed OFF")
     
         else:
             logger.write("In the MAX to MIN zone ON_FLAG = "+str(ON_FLAG))
             if ON_FLAG:
                 CheckMaxRunTime(MaxConRunTime, RestTime)
 
-                    
+        logger.write("END OF POLLING LOOP")             
         sleep(PollTime)
         # End of Polling Loop
         
