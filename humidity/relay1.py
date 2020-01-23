@@ -17,7 +17,9 @@ import os, sys
 sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
 
-logger = DU.c_logger("/home/pi/dev/gpio/humidity/", "log1.txt")
+logger  = DU.c_logger("/home/pi/dev/gpio/humidity/","log1.txt")
+logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/","log2.txt")
+
 
 # set Pi pin config to "Board" NOT Physical pin numbers
 GPIO.setmode(GPIO.BCM)
@@ -75,6 +77,7 @@ def main():
         hvalue, tvalue =  o_HT.read_dht()
         etime = str(round(o_T.elapsedtime(),2)) 
         logger.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime)+" Secs")
+        logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime)+" Secs")
 
         if  hvalue > OnThres: 
             if not ON_FLAG: # 1st time in this section of code
