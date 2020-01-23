@@ -65,7 +65,12 @@
 #
 # 6   Code module renamed to GPIO.py - ie have dropped the Version as code
 #     is now in GITHub as at 8 June 2018 (also true for DU.py)
-#
+#######################################################################
+# 16 Jan 2020
+# 1 - start up delay increase to 4 mins from 3mins. needed as new sky router
+#     takes longer to boot so we dont  miss the first generated email at Pi 
+#     boot up.
+# 2 - change boiler sensor to water level sensor. logic is inverted.
 ###############################################################################
 import os
 import smtplib
@@ -152,7 +157,7 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     except smtplib.SMTPServerDisconnected :
         lmsg = "Err_01: smtplib.SMTPServerDisconnected"
     except smtplib.SMTPResponseException as e:
-        lmsg = "Err_02 : " + "smtplib.SMTPResponseException: " + str(e.smtp_code) + " " + str(e.smtp_error)
+        lmsg = "Err_02 : " + "smtplib.SMTPResponseExceptiosqn: " + str(e.smtp_code) + " " + str(e.smtp_error)
     except smtplib.SMTPSenderRefused:
         lmsg = "Err_03: smtplib.SMTPSenderRefused"
     except smtplib.SMTPRecipientsRefused:
@@ -302,7 +307,7 @@ o_TempLOG = DU.c_logger(LOGS_DIR,"Temperature_log.txt")
 
 ### In case of recovery from mains power failure
 #   allow time for router and TPLink (Ethernet over mains) units to initialise! 
-wait2start = 60 * 3
+wait2start = 60 * 4
 T.sleep(wait2start)
 o_LOG.write("Starting program after a wait of  " + str(wait2start) + " seconds.") 
                
@@ -317,11 +322,11 @@ Ncount      = 0      # Count number of polls
 ElapsedTime = 0
 
 # GPIO pin usage ......
-PIN_B       = 27     # Pi pin 13 Boiler Lockout (moved for RTC in Ver Mk4 of s/w)
+PIN_B       = 27     # Pi pin 13 Water level (moved for RTC in Ver Mk4 of s/w)
 PIN_S       = 17     # Pi pin 11 Sewer  Flooded ( ditto )
 PIN_X       = 10     # Pi pin 19  Spare
 
-POUT_B      = 24     # Pi pin 18 Boiler LED(Red)
+POUT_B      = 24     # Pi pin 18 Water level LED(Red)
 POUT_S      = 25     # Pi pin 22 Sewer  LED(Green)
 POUT_X      = 23     # Pi pin 16   SPARE
 
@@ -332,8 +337,8 @@ POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 #    and read at runtime.
 
 ###### Instantiate GPIO checking objects
-chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-BOILER",     True) # TRUE  indicates state of pin in NON-FAULT condition = logical 1 or 3v
-chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True) # ditto
+chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-Water level",False)# False  indicates state of pin in NON-FAULT condition = logical 1 or 3v
+chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True) # True
 chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 
 o_LOG.write("Data from Pi device: " + PI_ID )  
