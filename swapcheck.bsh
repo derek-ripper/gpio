@@ -1,0 +1,20 @@
+#!/bin/bash
+# by     : Derek Ripper
+# created: 16 April 2020
+# Purpose: To drve the value of used swap space using "free -h"
+#          
+####################################################################################
+declare -i usedswap
+declare -i xx
+usedswap=`free -h | grep Swap | cut -c 27-30`
+
+echo "Used swap is: "$usedswap
+
+if [ $usedswap -gt 0 ] ; then
+    echo "Swap is greater than zero"
+else
+    echo "Swap is less    than zero"
+fi    
+
+xx=usedswap+6
+echo "xx= "$xx
