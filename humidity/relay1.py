@@ -52,8 +52,10 @@ def main():
             
     ### set initial state
     logger.write("SWITCHing  **ON* at START UP for the length of the first poll")
+    logger.write("                 to prove the Dehumidifier starts up OK!")
     o_RL1.switchON()
-    ON_FLAG = True
+    ON_FLAG = False
+    sleep(PollTime)
     
     ### write basic data to log file
     logger.write("OFF threshold: "+str(OffThres)+" %RH")
@@ -71,7 +73,7 @@ def main():
         #
         PollCount += 1
         logger.write("*")
-        logger.write("*** Poll number = "+str(PollCount) )
+        logger.write("*** Poll number = "+str(PollCount) +"-- "+ str(ON_FLAG))
         
         #
         hvalue, tvalue =  o_HT.read_dht()
@@ -116,14 +118,17 @@ def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
         if  o_T.elapsedtime() > (MaxConRunTime):
             logger.write("MAX Continuous runing time reached. Value = "+str(round(o_T.elapsedtime(),2)) )
             logger.write("Invoking rest time of: "+str(RestTime+PollTime)+" Secs")
-            ON_FLAG = False 
+            
+            
             o_RL1.switchOFF()
+            logger.write("RELAY swiched to OFF")
             o_T.calctotruntime()
             ttot = o_T.gettotruntime()
-            logger.write("Continuous running time to date is: "+str(ttot)+" secs")
+            logger.write("Continuous running time to date is: "+str(round(ttot,2)) +" secs")
             
             sleep(RestTime)
             o_T.resetstarttime()
+            o_RL1.switchON()
         else:
             logger.write("Max run time NOT exceeded")
 
