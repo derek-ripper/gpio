@@ -49,8 +49,10 @@ def main():
     OFFcount = 0
     ONcount  = 1 # first count set to be in first poll 
     PollCount= 0
+    errcnt   = 0
             
     ### set initial state
+    logger.write("***** INITIALISATION *****")
     logger.write("SWITCHing  **ON* at START UP for the length of the first poll")
     logger.write("                 to prove the Dehumidifier starts up OK!")
     o_RL1.switchON()
@@ -58,6 +60,7 @@ def main():
     
     o_RL1.switchOFF()
     ON_FLAG = False
+    logger.write("STARTUP   State = SWITCHed  ON")
     o_T.resetstarttime()
     
     ### write basic data to log file
@@ -75,11 +78,20 @@ def main():
         # if updated reload config values
         #
         PollCount += 1
-        logger.write("*")
-        logger.write("*** Poll # = "+str(PollCount) +"-- "+ str(ON_FLAG))
+        logger.write("")
+        logger.write("*** Poll # = "+str(PollCount)+" ***")
         
         #
         hvalue, tvalue =  o_HT.read_dht()
+        if(hvalue == 999):
+            errcnt +=1
+            logger.write("ERROR: reading DHTT11 values count= "+str(errcnt))
+            if(errcnt >5):
+                logger.write("ERROR: Maxiumm sensor read errors detected - program halted")
+                break
+        else:
+            pass
+        
         etime = str(round(o_T.elapsedtime(),2)) 
         logger.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime)+" Secs")
         logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime)+" Secs")
@@ -88,49 +100,51 @@ def main():
             if not ON_FLAG: # 1st time in this section of code
                 ON_FLAG = True
                 ONcount += 1
-                logger.write("   SWITCHing  ON, count= "+str(ONcount))
+                logger.write("Z_ON   SWITCHing  ON, count= "+str(ONcount))
                 o_T.resetstarttime()
                 o_RL1.switchON()
             else:          # 2nd or subsequent time in this code section
-                logger.write("   State = SWITCHed  ON")
+                logger.write("Z_ON   State = SWITCHed  ON")
                 CheckMaxRunTime(MaxConRunTime, RestTime, PollTime,  ON_FLAG)            
         
         elif hvalue <= OffThres:
             if ON_FLAG : # ie 1st time in this code section
                 ON_FLAG = False
                 OFFcount += 1                
-                logger.write("   SWITCHing OFF,count= "+str(OFFcount))
+                logger.write("Z_OFF   SWITCHing OFF,count= "+str(OFFcount))
                 o_T.calctotruntime()
                 o_RL1.switchOFF()
                 
             else:
-                logger.write("   State = SWITCHed OFF")
+                logger.write("Z_OFF   State = SWITCHed OFF")
     
         else: # Between the Max and Min thresholds
             if ON_FLAG:
-                logger.write("   State = SWITCHed ON  - In the MAX to MIN zone")
+                logger.write("Z_ONorOFF   State = SWITCHed ON  - In the MAX to MIN zone")
                 CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG )
             else:
-                logger.write("   State = SWITCHed OFF - In the MAX to MIN zone")
+                logger.write("Z_ONorOFF   State = SWITCHed OFF")
 
         logger.write("*** END OF POLLING LOOP")             
 
         # End of Polling Loop
         
 def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
+        # Purpose: Check that maximum continuous run time ha snot been exceeded and if it has 
+        #          been then invoke rest period.
         if  o_T.elapsedtime() > (MaxConRunTime):
             logger.write("   MAX Continuous runing time reached. Value = "+str(round(o_T.elapsedtime(),2)) )
             logger.write("   Invoking rest time of: "+str(RestTime+PollTime)+" Secs")
             
-            
+            logger.write("   SWITCHing  OFF")
             o_RL1.switchOFF()
-            logger.write("   RELAY swiched to OFF")
             o_T.calctotruntime()
             ttot = o_T.gettotruntime()
             logger.write("   Continuous running time to date is: "+str(round(ttot,2)) +" secs")
             
             sleep(RestTime)
             o_T.resetstarttime()
+            logger.write("   SWITCHing  ON")
             o_RL1.switchON()
         else:
             logger.write("   Max run time NOT exceeded")
