@@ -17,9 +17,10 @@ import os, sys
 sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
 
-logger  = DU.c_logger("/home/pi/dev/gpio/humidity/","log1.txt")
-logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/","log2.txt")
+logger  = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log1.txt")
+logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log2.txt")
 
+print("\nStarting RELAY!.py ...........\n")
 
 # set Pi pin config to "Board" NOT Physical pin numbers
 GPIO.setmode(GPIO.BCM)
