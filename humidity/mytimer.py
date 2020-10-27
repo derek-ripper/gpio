@@ -4,9 +4,14 @@ import time
 class timer(object):
 
     def __init__(self):
+        self.startingtime=self.currenttime()
         self.resetstarttime()
         self.cumruntime = 0.0
-
+        
+    def timefromprogramstart(self):
+        rc = self.currenttime() - self.startingtime 
+        return rc
+        
     def elapsedtime(self):
         elasped = self.currenttime() - self.starttime  
         return elasped
@@ -18,12 +23,12 @@ class timer(object):
     def resetstarttime(self): 
       self.starttime = time.time()
       
-    def calctotruntime(self):
+    def calccumruntime(self):
         runningtime = self.elapsedtime()  
         self.cumruntime = self.cumruntime  + runningtime
         self.resetstarttime()
 
-    def gettotruntime(self):
+    def getcumruntime(self):
         return self.cumruntime
 
     def secs2dhms(self,seconds):

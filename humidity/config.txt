@@ -8,8 +8,9 @@ DataPath = /home/pi/dev/gpio/humidity/
 
 ######################################################
 # All times in seconds
+TESTTIME       =  10
 POLLTIME       =  15
-S
+
 RESTTIME       =  20
 MAXCONRUNTIME  =  60
 
