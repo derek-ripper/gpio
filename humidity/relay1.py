@@ -52,7 +52,7 @@ def main():
     OFFcount = 0 # set in the intialisaton process
     ONcount  = 0 # ditto 
     PollCount= 0 #
-    errcnt   = 0 # count of errors reading the DHT11 sensor
+    errcnt   = 0 # count of errors reading the DHT22 sensor
             
     ### set initial state
     logger.write("***** INITIALISATION *****")
@@ -94,9 +94,10 @@ def main():
         hvalue, tvalue =  oHT.read_dht()
         if(hvalue == 999):
             errcnt +=1
-            logger.write("ERROR: reading DHT-11 values. Error count= "+str(errcnt))
+            logger.write("ERROR: reading DHT-22 values. Error count= "+str(errcnt))
             if(errcnt >5):
-                logger.write("ERROR: Maxiumm sensor read errors detected - program halted")
+                logger.write("ERROR: Maxiumm sensor read errors exceeded - program halted")
+                destroy()
                 break
         else:
             pass
