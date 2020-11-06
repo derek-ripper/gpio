@@ -26,8 +26,14 @@ print("\nStarting RELAY1.py ...........\n")
 # set Pi pin config to "Board" NOT Physical pin numbers
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+
+# Realy #1 switched mains voltage !
 Relay1_pin = 17
 oRL1 = sensor.relay(Relay1_pin)
+
+# Relay #2 switched 3.3 volts
+Relay2_pin = 18
+oRL2 = sensor.relay(Relay2_pin)
 
 DHT_SENSOR = 22
 DHT_PIN    = 4
@@ -78,7 +84,7 @@ def main():
     logger.write("ON  threshold     : "+str(OnThres) +" %RH")
     logger.write("")
     
-    ### THE POLLING LOOP  ###
+    ##### Start Infinte Polling Loop
     while True: 
 
         PollCount += 1
@@ -88,20 +94,25 @@ def main():
         #
         # check here for config file update
         # if updated reload config values
-        
-        
         #
+        
+        # READ DHT22 sensor values 
         hvalue, tvalue =  oHT.read_dht()
+        
         if(hvalue == 999):
             errcnt +=1
-            logger.write("ERROR: reading DHT-22 values. Error count= "+str(errcnt))
             if(errcnt >5):
-                logger.write("ERROR: Maxiumm sensor read errors exceeded - program halted")
+                logger.write("ERROR: Maxiumm sensor read Errors/Resets exceeded - program halted")
                 destroy()
                 break
-        else:
-            pass
-        
+            else: # take corrective action and rseet DHT22 by repowering it
+                logger.write("ERROR: Reading DHT22 values -- Power OFF DHT-22, count: "+str(errcnt))
+                oRL2.switchON()  # NC position
+                sleep(2)
+                oRL2.switchOFF() # NO position
+                logger.write("ERROR: Reading DHT22 values -- Power ON  DHT-22")
+
+            
         etime = oT.secs2dhms(oT.elapsedtime()) 
         logger.write ("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
         logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
@@ -137,7 +148,7 @@ def main():
 
         logger.write("*** END OF POLLING LOOP")             
 
-        # End of Polling Loop
+    ##### End of Polling Loop
         
 def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
         # Purpose: Check that maximum continuous run time has not been exceeded and if it has 
