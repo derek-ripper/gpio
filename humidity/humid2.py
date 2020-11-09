@@ -23,7 +23,7 @@ if __name__ == '__main__':
     DHT        = humidity()
 
     
-    logger = DU.c_logger("/home/pi/dev/gpio/humidity/", "log1.txt")
+    logger = DU.c_logger("/home/pi/dev/gpio/humidity/", "logx.txt")
     
     while True:
         try:

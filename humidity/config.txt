@@ -1,19 +1,20 @@
 # Config file for HUMIDITY controller
 # Created  : 11 Jan 2020
 # Author   : Derek
-###########################################i###########
+###############S#######################################
 
-##### Data Path
+##### Location Path for config.txt file
 DataPath = /home/pi/dev/gpio/humidity/
 
 ######################################################
 # All times in seconds
-POLLTIME       =  300
-# NB:actual rest time will always be POLLTME+RESTTIME
-RESTTIME       =  600
-MAXCONRUNTIME  =  2700
+TESTTIME       =  10
+POLLTIME       =  15
+
+RESTTIME       =  20
+MAXCONRUNTIME  =  60
 
 # Humidity ON & OFF Thresholds in % RH  
-ONTHRES        = 50.0
-OFFTHRES       = 45.0
+ONTHRES        = 51.0
+OFFTHRES       = 50.5
 ######################################################
