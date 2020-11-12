@@ -89,7 +89,7 @@ def main():
 
         PollCount += 1
         logger.write("")
-        logger.write("*** Poll # = "+str(PollCount)+" ***")
+        logger.write("*** Poll # = "+str(PollCount)+"  Time since program started up :"+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
         sleep(PollTime)
         #
         # check here for config file update
@@ -98,24 +98,23 @@ def main():
         
         # READ DHT22 sensor values 
         hvalue, tvalue =  oHT.read_dht()
+        etime = oT.secs2dhms(oT.elapsedtime()) 
+        logger.write ("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
+        logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
         
         if(hvalue == 999):
             errcnt +=1
-            if(errcnt >5):
+            if(errcnt >100):
                 logger.write("ERROR: Maxiumm sensor read Errors/Resets exceeded - program halted")
                 destroy()
                 break
             else: # take corrective action and rseet DHT22 by repowering it
                 logger.write("ERROR: Reading DHT22 values -- Power OFF DHT-22, count: "+str(errcnt))
-                oRL2.switchON()  # NC position
+                oRL2.switchON()  # NO position
                 sleep(2)
-                oRL2.switchOFF() # NO position
+                oRL2.switchOFF() # NC position
                 logger.write("ERROR: Reading DHT22 values -- Power ON  DHT-22")
 
-            
-        etime = oT.secs2dhms(oT.elapsedtime()) 
-        logger.write ("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
-        logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
 
         if  hvalue > OnThres: 
             if not ON_FLAG: # 1st time in this section of code
@@ -141,7 +140,7 @@ def main():
     
         else: # Between the Max and Min thresholds
             if ON_FLAG:
-                logger.write("Zone_ONorOFF   State = SWITCHed ON  - In the MAX to MIN zone")
+                logger.write("Zone_ONorOFF   State = SWITCHed ON")
                 CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG )
             else:
                 logger.write("Zone_ONorOFF   State = SWITCHed OFF")
@@ -154,7 +153,7 @@ def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
         # Purpose: Check that maximum continuous run time has not been exceeded and if it has 
         #          been then invoke rest period.
         if  oT.elapsedtime() > (MaxConRunTime):
-            logger.write("   Time since program started up            : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) ))) 
+
             
             logger.write("   MAX Con. running time exceeded. Value    : "+str(oT.secs2dhms(oT.elapsedtime())) )
             logger.write("   NOW Invoking rest time of                : "+str(oT.secs2dhms(RestTime)))

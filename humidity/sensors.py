@@ -1,8 +1,8 @@
 '''
 **********************************************************************
-* Filename 		: relayclass.py
-* Description     	: to control a single relay 
-* Author 		: Derek
+* Filename      : relayclass.py
+* Description       : to control a single relay 
+* Author        : Derek
 * Created               : 24 Dec 2019
 **********************************************************************
 '''
@@ -13,18 +13,17 @@ import Adafruit_DHT       #support of DHT sensor
 ###########################################################################
 class relay(object):
     def __init__(self, PinNum):
-
         self.gpiopin = PinNum
         GPIO.setup(self.gpiopin, GPIO.OUT, initial=GPIO.HIGH)
-	
-    def switchON(self):	
-        # relay in normal "NO" normally OPEN mode
-    	GPIO.output(self.gpiopin, GPIO.LOW)
     
-    def switchOFF(self):	  
+    def switchON(self): 
+        # relay in normal "NO" normally OPEN mode
+        GPIO.output(self.gpiopin, GPIO.LOW)
+    
+    def switchOFF(self):      
         # relay in normal "NC" Normally Conected mode
-    	GPIO.output(self.gpiopin, GPIO.HIGH)
-    	
+        GPIO.output(self.gpiopin, GPIO.HIGH)
+        
 ###########################################################################
 class humidity(object):
     def __init__(self, sensortype, sensorpin):
