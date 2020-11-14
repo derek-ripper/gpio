@@ -89,7 +89,7 @@ def main():
 
         PollCount += 1
         logger.write("")
-        logger.write("*** Poll # = "+str(PollCount)+"  Time since program started up :"+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
+        logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
         sleep(PollTime)
         #
         # check here for config file update
@@ -125,7 +125,7 @@ def main():
                 oRL1.switchON()
             else:          # 2nd or subsequent time in this code section
                 logger.write("Zone_ON   State = SWITCHed  ON")
-                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime,  ON_FLAG)            
+                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime,  ON_FLAG,ONcount,OFFcount)            
         
         elif hvalue <= OffThres:
             if ON_FLAG : # ie 1st time in this code section
@@ -141,7 +141,7 @@ def main():
         else: # Between the Max and Min thresholds
             if ON_FLAG:
                 logger.write("Zone_ONorOFF   State = SWITCHed ON")
-                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG )
+                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG. ONcount,OFFcount )
             else:
                 logger.write("Zone_ONorOFF   State = SWITCHed OFF")
 
@@ -149,7 +149,7 @@ def main():
 
     ##### End of Polling Loop
         
-def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
+def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG,ONcount,OFFcount):
         # Purpose: Check that maximum continuous run time has not been exceeded and if it has 
         #          been then invoke rest period.
         if  oT.elapsedtime() > (MaxConRunTime):
@@ -157,19 +157,23 @@ def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG):
             
             logger.write("   MAX Con. running time exceeded. Value    : "+str(oT.secs2dhms(oT.elapsedtime())) )
             logger.write("   NOW Invoking rest time of                : "+str(oT.secs2dhms(RestTime)))
-            
-            logger.write("   SWITCHing  OFF")
+          
+            OFFcount += 1
+            logger.write("   SWITCHing  OFF, count: "+str(OFFcount))
             oRL1.switchOFF()
+
             oT.calccumruntime()
             ttot = oT.secs2dhms(oT.getcumruntime() )
             logger.write("   Cum. Continuous running time to date is  : "+str(ttot) )
             
             sleep(RestTime)
             oT.resetstarttime()
-            logger.write("   SWITCHing  ON")
+            ONcount +=1
+            logger.write("   SWITCHing  ON. count: "+str(OFFcount))
+
             oRL1.switchON()
         else:
-            logger.write("   Max run time NOT exceeded")
+            logger.write("   Max run time NOT exceeded.  On count: "+str(ONcount)+", OFF count: "+str(OFFcount))
 
 def destroy():
     oRL1.switchOFF()

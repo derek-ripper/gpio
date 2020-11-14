@@ -12,7 +12,7 @@ echo "##### Start of script ..:" $0
 #
 #             also: changed shebang to bash script, not sh
 #########################################################################
-# 26 ctober 2020 Used in HUMIIDTY project
+# 26 October 2020 Used in HUMIIDTY project
  
 USERPROG=relay1.py
 ROOTPATH=/home/pi/dev/gpio/
@@ -20,7 +20,7 @@ PROGPATH=${ROOTPATH}humidity
 LOGSPATH=${ROOTPATH}humidity/logs/
 
 # ensure path for log files is there
-mkdir  ${LOGSPATH}                      
+mkdir -p ${LOGSPATH}                      
 
 STDOUT=${LOGSPATH}stdout.txt
 STDERR=${LOGSPATH}stderr.txt
@@ -29,8 +29,10 @@ STDERR=${LOGSPATH}stderr.txt
 #    seen at shutdown!!
 ###sleep 30 # wait for RTC to catch up!
 
+# see if sleep helps curl command finish to get external IP address
+sleep 30
 
-EXT_IP=`curl icanhazip.com`                             1>> $STDOUT  2>>$STDERR   
+EXT_IP=`curl ipv4.icanhazip.com`                        1>> $STDOUT  2>>$STDERR   
 
 cd   $PROGPATH
 
