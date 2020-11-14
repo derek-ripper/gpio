@@ -1,20 +1,30 @@
 #!/bin/bash
 # by     : Derek Ripper
 # created: 16 April 2020
-# Purpose: To drve the value of used swap space using "free -h"
+# Purpose: To derive the value of used swap space using "free -h"
 #          
 ####################################################################################
-declare -i usedswap
-declare -i xx
-usedswap=`free -h | grep Swap | cut -c 27-30`
+xDATETIME=`date`
+TARGET='/home/pi/Documents/logs/swapmemorylog.txt'
 
-echo "Used swap is: "$usedswap
+usedswap=`free | grep Swap | cut -c 20-31`
 
-if [ $usedswap -gt 0 ] ; then
-    echo "Swap is greater than zero"
+### get last value of used swap
+# strip last line of log file
+lastswap=$(tail -n 1 $TARGET)
+# remove 1st field from last line of log file
+lastswap=`echo $lastswap | cut -d';' -f 1`
+echo "Used     swap:"$usedswap
+echo "prevoous swap:"$lastswap
+
+
+newstring=$usedswap";"$xDATETIME
+
+
+if  [ $usedswap  -ne  $lastswap ] ; then
+    echo $newstring >> $TARGET
+    echo "Swap has as changed since last consistent value"
 else
-    echo "Swap is less    than zero"
+    echo "Swap is unchanged value still=" $lastswap 
 fi    
 
-xx=usedswap+6
-echo "xx= "$xx

@@ -12,7 +12,9 @@ echo "##### Start of script ..:" $0
 #
 #             also: changed shebang to bash script, not sh
 #########################################################################
-
+# 14 NOV 2020 added -p to mkdir to stopfailure if dir exists
+#              added ipv4. prefix to icanhazip.com - sappears that Sky 
+#              give both ip6 and ip4 addresses
 
 USERPROG=GPIO.py
 ROOTPATH=/home/pi/Documents/
@@ -20,7 +22,7 @@ PROGPATH=${ROOTPATH}gpio/
 LOGSPATH=${ROOTPATH}logs/
 
 # ensure path for log files is there
-mkdir  ${LOGSPATH}                      
+mkdir -p ${LOGSPATH}                      
 
 STDOUT=${LOGSPATH}stdout.txt
 STDERR=${LOGSPATH}stderr.txt
@@ -30,7 +32,7 @@ STDERR=${LOGSPATH}stderr.txt
 sleep 30 # wait for RTC to catch up!
 
 
-EXT_IP=`curl icanhazip.com`                             1>> $STDOUT  2>>$STDERR   
+EXT_IP=`curl ipv4.icanhazip.com`                             1>> $STDOUT  2>>$STDERR   
 
 cd   $PROGPATH
 
