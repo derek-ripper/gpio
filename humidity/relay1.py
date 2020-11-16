@@ -6,6 +6,9 @@
 * Created       : Dec 2019 fully reworked in Oct 2020 
 * Author        : Derek
 **********************************************************************
+* 16 Nov 2020 - make config data reload if fileexternally changed.
+*
+**********************************************************************
 '''
 import RPi.GPIO as GPIO
 from time import sleep
