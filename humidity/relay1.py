@@ -141,7 +141,7 @@ def main():
         else: # Between the Max and Min thresholds
             if ON_FLAG:
                 logger.write("Zone_ONorOFF   State = SWITCHed ON")
-                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG. ONcount,OFFcount )
+                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG, ONcount,OFFcount )
             else:
                 logger.write("Zone_ONorOFF   State = SWITCHed OFF")
 
