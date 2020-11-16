@@ -15,6 +15,7 @@ from time import sleep
 
 import sensors as sensor
 import mytimer as T
+import config   as CFG    
 
 # needed to access my other Pyton std. modules
 import os, sys
@@ -44,18 +45,26 @@ DHT_PIN    = 4
 oHT = sensor.humidity(DHT_SENSOR,DHT_PIN)
 oT  = T.timer()
 
+class params(object):
+    def __init__(self, configfile):
+        LoadParams(configfile)
+        
+    def LoadParams(self,configfile):    
+        oCfg     = CFG.ReadConfig(configfile)
+        self.TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
+        self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
+        self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
+        self.MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
+    
+        self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
+        self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
+    
+    
 def main():
-    import config   as CFG    
-    oCfg     = CFG.ReadConfig('config.txt')
+
     
     ### CONSTANTS 
-    TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
-    PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
-    RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
-    MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
-    
-    OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
-    OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
+    oP = params("config.txt)
     
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
@@ -78,13 +87,13 @@ def main():
     ### write basic data to log file
     logger.write("")
     logger.write("Basic Control Data")
-    logger.write("Test Time         : "+str(TestTime)+" secs")
-    logger.write("Poll interval     : "+str(PollTime)+" secs")
-    logger.write("Max con run time  : "+str(MaxConRunTime)+" secs")
-    logger.write("Rest Time         : "+str(RestTime)+" secs")  
+    logger.write("Test Time         : "+str(oP.TestTime)+" secs")
+    logger.write("Poll interval     : "+str(oP.PollTime)+" secs")
+    logger.write("Max con run time  : "+str(oP.MaxConRunTime)+" secs")
+    logger.write("Rest Time         : "+str(oP.RestTime)+" secs")  
     logger.write("")
-    logger.write("OFF threshold     : "+str(OffThres)+" %RH")
-    logger.write("ON  threshold     : "+str(OnThres) +" %RH")
+    logger.write("OFF threshold     : "+str(oP.OffThres)+" %RH")
+    logger.write("ON  threshold     : "+str(oP.OnThres) +" %RH")
     logger.write("")
     
     ##### Start Infinte Polling Loop
@@ -119,7 +128,7 @@ def main():
                 logger.write("ERROR: Reading DHT22 values -- Power ON  DHT-22")
 
 
-        if  hvalue > OnThres: 
+        if  hvalue > oP.OnThres: 
             if not ON_FLAG: # 1st time in this section of code
                 ON_FLAG = True
                 ONcount += 1
@@ -130,7 +139,7 @@ def main():
                 logger.write("Zone_ON   State = SWITCHed  ON")
                 CheckMaxRunTime(MaxConRunTime, RestTime, PollTime,  ON_FLAG,ONcount,OFFcount)            
         
-        elif hvalue <= OffThres:
+        elif hvalue <= oP.OffThres:
             if ON_FLAG : # ie 1st time in this code section
                 ON_FLAG = False
                 OFFcount += 1                
