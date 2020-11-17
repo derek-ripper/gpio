@@ -64,7 +64,7 @@ def main():
 
     
     ### CONSTANTS 
-    oP = params("config.txt)
+    oP = params("config.txt")
     
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
