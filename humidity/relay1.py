@@ -15,12 +15,13 @@ from time import sleep
 
 import sensors as sensor
 import mytimer as T
-import config   as CFG    
+   
 
 # needed to access my other Pyton std. modules
 import os, sys
 sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
+import config   as CFG 
 
 logger  = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log1.txt")
 logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log2.txt")
@@ -45,9 +46,11 @@ DHT_PIN    = 4
 oHT = sensor.humidity(DHT_SENSOR,DHT_PIN)
 oT  = T.timer()
 
+
 class params(object):
     def __init__(self, configfile):
-        LoadParams(configfile)
+        self.LoadParams(configfile)
+        self.wrte2logfile()
         
     def LoadParams(self,configfile):    
         oCfg     = CFG.ReadConfig(configfile)
@@ -59,12 +62,26 @@ class params(object):
         self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
         self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
     
+    def wrte2logfile(self):
+        ### write basic data to log file
+        logger.write("")
+        logger.write("Basic Control Data")
+        logger.write("Test Time         : "+str(self.TestTime)+" secs")
+        logger.write("Poll interval     : "+str(self.PollTime)+" secs")
+        logger.write("Max con run time  : "+str(self.MaxConRunTime)+" secs")
+        logger.write("Rest Time         : "+str(self.RestTime)+" secs")  
+        logger.write("")
+        logger.write("OFF threshold     : "+str(self.OffThres)+" %RH")
+        logger.write("ON  threshold     : "+str(self.OnThres) +" %RH")
+        logger.write("")  
+  
+### CONSTANTS 
+oP = params("config.txt")          
     
 def main():
 
     
-    ### CONSTANTS 
-    oP = params("config.txt)
+
     
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
@@ -74,27 +91,17 @@ def main():
             
     ### set initial state
     logger.write("***** INITIALISATION *****")
-    logger.write("Start Up  SWITCHing  ON  for "+str(TestTime)+" secs"+"\n\t\t\t\t\t  to Test Humidfier fires up!")
+    logger.write("Start Up  SWITCHing  ON  for "+str(oP.TestTime)+" secs"+"\n\t\t\t\t\t  to Test Humidfier fires up!")
 
     oRL1.switchON()
-    sleep(TestTime)
+    sleep(oP.TestTime)
     
     oRL1.switchOFF()
     ON_FLAG = False
     logger.write("STARTUP   State = SWITCHed  OFF")
     oT.resetstarttime()
     
-    ### write basic data to log file
-    logger.write("")
-    logger.write("Basic Control Data")
-    logger.write("Test Time         : "+str(oP.TestTime)+" secs")
-    logger.write("Poll interval     : "+str(oP.PollTime)+" secs")
-    logger.write("Max con run time  : "+str(oP.MaxConRunTime)+" secs")
-    logger.write("Rest Time         : "+str(oP.RestTime)+" secs")  
-    logger.write("")
-    logger.write("OFF threshold     : "+str(oP.OffThres)+" %RH")
-    logger.write("ON  threshold     : "+str(oP.OnThres) +" %RH")
-    logger.write("")
+
     
     ##### Start Infinte Polling Loop
     while True: 
@@ -102,10 +109,10 @@ def main():
         PollCount += 1
         logger.write("")
         logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
-        sleep(PollTime)
+        sleep(oP.PollTime)
         #
-        # check here for config file update
-        # if updated reload config values
+        # ##### check here for config file update
+        # ##### if updated then reload config values
         #
         
         # READ DHT22 sensor values 
@@ -137,7 +144,7 @@ def main():
                 oRL1.switchON()
             else:          # 2nd or subsequent time in this code section
                 logger.write("Zone_ON   State = SWITCHed  ON")
-                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime,  ON_FLAG,ONcount,OFFcount)            
+                CheckMaxRunTime(oP.MaxConRunTime, oP.RestTime, oP.PollTime,  ON_FLAG,ONcount,OFFcount)            
         
         elif hvalue <= oP.OffThres:
             if ON_FLAG : # ie 1st time in this code section
@@ -153,7 +160,7 @@ def main():
         else: # Between the Max and Min thresholds
             if ON_FLAG:
                 logger.write("Zone_ONorOFF   State = SWITCHed ON")
-                CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG, ONcount,OFFcount )
+                CheckMaxRunTime(oP.MaxConRunTime, oP.RestTime, oP.PollTime, ON_FLAG, ONcount,OFFcount )
             else:
                 logger.write("Zone_ONorOFF   State = SWITCHed OFF")
 
