@@ -48,8 +48,9 @@ oT  = T.timer()
 
 
 class params(object):
-    def __init__(self, configfile):
-        self.LoadParams(configfile)
+    def __init__(self, InputFile):
+        self.InputFile = InputFile
+        self.LoadParams(self.inputyfile)
         self.wrte2logfile()
         
     def LoadParams(self,configfile):    
@@ -74,7 +75,11 @@ class params(object):
         logger.write("OFF threshold     : "+str(self.OffThres)+" %RH")
         logger.write("ON  threshold     : "+str(self.OnThres) +" %RH")
         logger.write("")  
-  
+        
+    def ReloadParams(self)
+        self.LoadParams(self.inputfile)
+        logger.write("*** Run Data ReLoaded ***")
+        self.wrte2logfile()
 ### CONSTANTS 
 oP = params("config.txt")          
     
