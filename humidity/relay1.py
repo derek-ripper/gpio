@@ -199,7 +199,7 @@ def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG,ONcount,OFFcount)
             sleep(RestTime)
             oT.resetstarttime()
             ONcount +=1
-            logger.write("   SWITCHing  ON. count: "+str(ONcount))
+            logger.write("   SWITCHing  ON. count: "+str(OFFcount))
 
             oRL1.switchON()
         else:
