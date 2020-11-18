@@ -13,8 +13,9 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-import sensors as sensor
-import mytimer as T
+import sensors   as sensor
+import mytimer   as T
+import FileClass as FU
    
 
 # needed to access my other Pyton std. modules
@@ -23,10 +24,43 @@ sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
 import config   as CFG 
 
+class params(object):
+    def __init__(self, File):
+        self.InputFile = File
+        self.LoadParams(self.InputFile)
+        self.wrte2logfile()
+
+        
+    def LoadParams(self,configfile):    
+        oCfg     = CFG.ReadConfig(configfile)
+        self.TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
+        self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
+        self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
+        self.MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
+    
+        self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
+        self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
+    
+    def wrte2logfile(self):
+        ### write basic data to log file
+
+        logger.write("Basic Control Data")
+        logger.write("Test Time         : "+str(self.TestTime)+" secs")
+        logger.write("Poll interval     : "+str(self.PollTime)+" secs")
+        logger.write("Max con run time  : "+str(self.MaxConRunTime)+" secs")
+        logger.write("Rest Time         : "+str(self.RestTime)+" secs")  
+        logger.write("")
+        logger.write("OFF threshold     : "+str(self.OffThres)+" %RH")
+        logger.write("ON  threshold     : "+str(self.OnThres) +" %RH")
+
+        
+    def ReLoadParams(self):
+        self.LoadParams(self.InputFile)
+        self.wrte2logfile()
+
+##### Object Defintions
 logger  = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log1.txt")
 logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log2.txt")
-
-print("\nStarting RELAY1.py ...........\n")
 
 # set Pi pin config to "Board" NOT Physical pin numbers
 GPIO.setmode(GPIO.BCM)
@@ -41,49 +75,19 @@ Relay2_pin = 18
 oRL2 = sensor.relay(Relay2_pin)
 
 DHT_SENSOR = 22
-DHT_PIN    = 4
+DHT_PIN    = 4  
 
 oHT = sensor.humidity(DHT_SENSOR,DHT_PIN)
+
 oT  = T.timer()
 
+oP = params("config.txt")     # run time parameters      
 
-class params(object):
-    def __init__(self, InputFile):
-        self.InputFile = InputFile
-        self.LoadParams(self.inputyfile)
-        self.wrte2logfile()
-        
-    def LoadParams(self,configfile):    
-        oCfg     = CFG.ReadConfig(configfile)
-        self.TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
-        self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
-        self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
-        self.MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
-    
-        self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
-        self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
-    
-    def wrte2logfile(self):
-        ### write basic data to log file
-        logger.write("")
-        logger.write("Basic Control Data")
-        logger.write("Test Time         : "+str(self.TestTime)+" secs")
-        logger.write("Poll interval     : "+str(self.PollTime)+" secs")
-        logger.write("Max con run time  : "+str(self.MaxConRunTime)+" secs")
-        logger.write("Rest Time         : "+str(self.RestTime)+" secs")  
-        logger.write("")
-        logger.write("OFF threshold     : "+str(self.OffThres)+" %RH")
-        logger.write("ON  threshold     : "+str(self.OnThres) +" %RH")
-        logger.write("")  
-        
-    def ReloadParams(self)
-        self.LoadParams(self.inputfile)
-        logger.write("*** Run Data ReLoaded ***")
-        self.wrte2logfile()
-### CONSTANTS 
-oP = params("config.txt")          
-    
+oF = FU.FileMod(oP.InputFile) # check if file updated while prog is Live
+#####
+
 def main():
+    print("\nStarting RELAY1.py ...........\n")
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
     ONcount  = 0 # ditto 
@@ -111,11 +115,17 @@ def main():
         logger.write("")
         logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
         sleep(oP.PollTime)
-        #
-        # ##### check here for config file update
-        # ##### if updated then reload config values
-        #
         
+        # Check if config.txt has been updated while program is running?
+        if oF.Changed():
+            logger.write("")  
+            logger.write("*** START  - Run Data ReLoaded ***")
+            oP.ReLoadParams()
+            logger.write("*** FINISH - Run Data ReLoaded ***")
+            logger.write("")  
+        else:
+            pass
+            
         # READ DHT22 sensor values 
         hvalue, tvalue =  oHT.read_dht()
         etime = oT.secs2dhms(oT.elapsedtime()) 
