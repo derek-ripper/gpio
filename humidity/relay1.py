@@ -9,6 +9,7 @@
 * 16 Nov 2020 - make config data reload if fileexternally changed.
 *
 **********************************************************************
+Mod to test merge on GitHUB ####
 '''
 import RPi.GPIO as GPIO
 from time import sleep
