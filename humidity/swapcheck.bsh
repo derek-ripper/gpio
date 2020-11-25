@@ -1,7 +1,7 @@
 #!/bin/bash
 # by     : Derek Ripper
 # created: 16 April 2020
-# Purpose: To derive the value of used swap space using "free -h"
+# Purpose: To derive the value of used swap space using "free  "
 #          
 ########################################################################
 # Updates:
@@ -9,7 +9,7 @@
 #     swapmemorylog.txt existing
 ########################################################################
 DATETIME=`date`
-TARGET='/home/pi/Documents/logs/swapmemorylog.txt'
+TARGET='/home/pi/dev/gpio/humidity/logs/swapmemorylog.txt'
 
 # If no previous log file from "free " command  create it
 if [ ! -e  $TARGET ] ; then 
@@ -24,11 +24,11 @@ usedswap=`free | grep Swap | cut -c 20-31`
 lastswap=$(tail -n 1 $TARGET)
 # remove 1st field from last line of log file
 lastswap=`echo $lastswap | cut -d';' -f 1`
-echo "Used     swap:"$usedswap
-echo "prevoous swap:"$lastswap
+echo "Used     swap: "$usedswap
+echo "previous swap: "$lastswap
 
 
-newstring=$usedswap";"$xDATETIME
+newstring=$usedswap";"$DATETIME
 
 
 if  [ $usedswap  -ne  $lastswap ] ; then

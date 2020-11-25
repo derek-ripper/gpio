@@ -9,12 +9,12 @@ DataPath = /home/pi/dev/gpio/humidity/
 ######################################################
 # All times in seconds
 TESTTIME       =  10
-POLLTIME       =  15
+POLLTIME       =  30
 
 RESTTIME       =  20
 MAXCONRUNTIME  =  60
 
 # Humidity ON & OFF Thresholds in % RH  
-ONTHRES        = 50.25
-OFFTHRES       = 49.5
+ONTHRES        = 48.00
+OFFTHRES       = 47.5
 ######################################################
