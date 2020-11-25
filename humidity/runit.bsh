@@ -15,9 +15,9 @@ echo "##### Start of script ..:" $0
 # 26 October 2020 Used in HUMIIDTY project
  
 USERPROG=relay1.py
-ROOTPATH=/home/pi/dev/gpio/
-PROGPATH=${ROOTPATH}humidity
-LOGSPATH=${ROOTPATH}humidity/logs/
+ROOTPATH=/home/pi/dev/
+PROGPATH=${ROOTPATH}gpio/humidity
+LOGSPATH=${ROOTPATH}logs/
 
 # ensure path for log files is there
 mkdir -p ${LOGSPATH}                      

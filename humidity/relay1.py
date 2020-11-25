@@ -60,8 +60,8 @@ class params(object):
         self.wrte2logfile()
 
 ##### Object Defintions
-logger  = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log1.txt")
-logger2 = DU.c_logger("/home/pi/dev/gpio/humidity/logs","log2.txt")
+logger  = DU.c_logger("/home/pi/dev/logs","log1.txt")
+logger2 = DU.c_logger("/home/pi/dev/logs","log2.txt")
 
 # set Pi pin config to "Board" NOT Physical pin numbers
 GPIO.setmode(GPIO.BCM)

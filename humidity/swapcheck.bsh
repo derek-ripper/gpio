@@ -9,7 +9,7 @@
 #     swapmemorylog.txt existing
 ########################################################################
 DATETIME=`date`
-TARGET='/home/pi/dev/gpio/humidity/logs/swapmemorylog.txt'
+TARGET='/home/pi/dev/logs/swapmemorylog.txt'
 
 # If no previous log file from "free " command  create it
 if [ ! -e  $TARGET ] ; then 
