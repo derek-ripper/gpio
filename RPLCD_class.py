@@ -1,9 +1,9 @@
 # **********************************************************************
 # * Filename      : RPLCD_class.py
 # * Purpose       : Using std lib for LCD display with extra functions 
-#                 : to extand the class  to class
+#                 : to extand the class
 #
-# * Created       : 31 Dec 201920 fully reworked in Oct 2020 
+# * Created       : 31 Dec 2021 
 # * Author        : Derek
 # **********************************************************************
 # updates:
@@ -54,7 +54,7 @@ class Mylcd(CharLCD):
 	def cls(self):
 		self.clear()
 		
-	# create custom characters
+	# create custom characters - allowed id's 0 thru 7
 
 	def genchars(self):
 		#char=0 as Degree symbol
@@ -79,6 +79,17 @@ class Mylcd(CharLCD):
 		0b10001,
 		0b11111,
 		]
+		#char=2 as a block
+		block = [
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		0b11111,
+		]
 		self.create_char(0, degree)
 		self.create_char(1, box)	
-		
+		self.create_char(2, block)
