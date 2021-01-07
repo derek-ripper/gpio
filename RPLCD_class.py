@@ -28,14 +28,16 @@ import time
 
 
 class Mylcd(CharLCD):
-	def __init__(self,   i2c_expander='PCF8574', address=0x27):
+
+	def __init__(self,   i2c_expander,address):
 		super().__init__(i2c_expander='PCF8574', address=0x27)
 		
 		# generate special characters
 		self.genchars()
 				
 	def write2pos(self,value, line=1, pos=1):
-		#adjust screen origin to 0,0 at Top lefthand corner
+		# user coord system starts at 1,1
+		# adjust screen origin to 0,0 at Top lefthand corner
 		line -= 1
 		pos  -= 1 
 		self.cursor_pos = (line, pos)
