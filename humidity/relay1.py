@@ -135,7 +135,7 @@ def main():
         
         if(hvalue == 999):
             errcnt +=1
-            if(errcnt >100):
+            if(errcnt >1000):
                 logger.write("ERROR: Maxiumm sensor read Errors/Resets exceeded - program halted")
                 destroy()
                 break
