@@ -1,4 +1,4 @@
-                                                                             a#!/usr/bin/env python3
+#!/usr/bin/env python3
 ''' 
 **********************************************************************
 * Filename      : relay1.py
@@ -9,7 +9,11 @@
 * 16 Nov 2020 - make config data reload if fileexternally changed.
 *
 **********************************************************************
-Mod to test merge on GitHUB ####
+Updates:
+20 Jan 2020 - DHTsensor now powered from a GPIO pin. Hence new routine to 
+              reaset it. Previously done using spare relay in the 
+              2 channel module on a direct power line. RElay2 left in code 
+              but not used. Status set that on board LED is not lit.
 '''
 import RPi.GPIO as GPIO
 from time import sleep
@@ -71,14 +75,16 @@ GPIO.setwarnings(False)
 Relay1_pin = 17
 oRL1 = sensor.relay(Relay1_pin)
 
-# Relay #2 switched 3.3 volts
+## Relay #2 NOT used as at 20 Jan 2020
 Relay2_pin = 18
 oRL2 = sensor.relay(Relay2_pin)
+oRL2.switchOFF()
 
-DHT_SENSOR = 22
-DHT_PIN    = 4  
+DHT_SENSOR  = 22
+DHT_PIN     = 4  
+DHT_PWR_PIN = 27
 
-oHT = sensor.humidity(DHT_SENSOR,DHT_PIN)
+oHT = sensor.humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
 
 oT  = T.timer()
 
@@ -141,9 +147,7 @@ def main():
                 break
             else: # take corrective action and rseet DHT22 by repowering it
                 logger.write("ERROR: Reading DHT22 values -- Power OFF DHT-22, count: "+str(errcnt))
-                oRL2.switchON()  # NO position
-                sleep(2)
-                oRL2.switchOFF() # NC position
+                oHT.reset()
                 logger.write("ERROR: Reading DHT22 values -- Power ON  DHT-22")
 
 
