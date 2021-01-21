@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import Adafruit_DHT
 
-class Humidity(object):
+# class Humidity(object):
 
-    def read_ht(self,DHT_SENSOR,DHT_PIN):
-        humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-        return humidity, temperature
+    # def read_ht(self,DHT_SENSOR,DHT_PIN):
+        # humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+        # return humidity, temperature
 
 #############################################################################
 import os
@@ -15,6 +15,7 @@ import time as T
 # needed to access my other Pyton std. modules
 sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
 import DU
+import sensors as sensor
 from  RPLCD_class import Mylcd
 
 
@@ -22,7 +23,8 @@ if __name__ == '__main__':
 
     DHT_SENSOR = Adafruit_DHT.DHT22
     DHT_PIN    = 4
-    dht        = Humidity()
+    DHT_PWR_PIN = 27
+    oHT = sensor.humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
 
     lcd = Mylcd(i2c_expander='PCF8574', address=0x27)
     
@@ -37,7 +39,7 @@ if __name__ == '__main__':
         try:
             T.sleep(5)
             polls += 1
-            humid, temp = dht.read_ht(DHT_SENSOR,DHT_PIN)
+            humid, temp = oht.read_ht(DHT_SENSOR,DHT_PIN)
             print("type humid: "+ str(type(humid)))
             print("type temp: " + str(type(temp)))
             # check that a reading was possible

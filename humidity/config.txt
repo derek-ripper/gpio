@@ -15,6 +15,6 @@ RESTTIME       =  20
 MAXCONRUNTIME  =  60
 
 # Humidity ON & OFF Thresholds in % RH  
-ONTHRES        = 48.00
-OFFTHRES       = 47.5
+ONTHRES        = 37.90
+OFFTHRES       = 37.10
 ######################################################
