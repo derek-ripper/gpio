@@ -56,7 +56,7 @@ class humidity(object):
         return humidity, temperature
         
     def reset(self, offtime=2):
-        GPIO.output(self.DHT_PWR_PIN,  GPIO.OUT, initial=GPIO.LOW)
+        GPIO.output(self.DHT_PWR_PIN, GPIO.LOW)
         time.sleep(offtime)
-        GPIO.outputt(self.DHT_PWR_PIN, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.output(self.DHT_PWR_PIN, GPIO.HIGH)
         
