@@ -78,7 +78,7 @@ lcd     = Mylcd(i2c_expander='PCF8574', address=0x27, cols=16, rows=2)
 # Realy #1 switched mains voltage !| grep re
 
 Relay1_pin = 17
-oRL1 = sensor.relay(Relay1_pin)
+oRL1 = sensor.Relay(Relay1_pin)
 
 ## Relay #2 NOT used as at 20 Jan 2020
 Relay2_pin = 18

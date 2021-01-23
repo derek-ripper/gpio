@@ -18,7 +18,7 @@ import Adafruit_DHT       #support of DHT sensor
 
 import time
 ###########################################################################
-class relay(object):
+class Relay(object):
     def __init__(self, PinNum):
         self.gpiopin = PinNum
         GPIO.setup(self.gpiopin, GPIO.OUT, initial=GPIO.HIGH)
