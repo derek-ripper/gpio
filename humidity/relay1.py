@@ -89,7 +89,7 @@ DHT_SENSOR  = 22
 DHT_PIN     = 4  
 DHT_PWR_PIN = 27
 
-oHT = sensor.humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
+oHT = sensor.Humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
 
 oT  = T.timer()
 

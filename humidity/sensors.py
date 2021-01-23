@@ -32,7 +32,7 @@ class relay(object):
         GPIO.output(self.gpiopin, GPIO.HIGH)
         
 ###########################################################################
-class humidity(object):
+class Humidity(object):
     def __init__(self, sensortype, sensorpin, pwrpin):
         self.DHT_SENSOR  = sensortype
         self.DHT_PIN     = sensorpin
