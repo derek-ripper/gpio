@@ -28,7 +28,7 @@ if __name__ == '__main__':
     DHT_SENSOR  = Adafruit_DHT.DHT22
     DHT_PIN     = 4
     DHT_PWR_PIN = 27
-    oht = sensor.humidity(DHT_SENSOR, DHT_PIN, DHT_PWR_PIN)
+    oht = sensor.Humidity(DHT_SENSOR, DHT_PIN, DHT_PWR_PIN)
     print("RESET")
     oht.reset(offtime=10)
     lcd = Mylcd(i2c_expander='PCF8574', address=0x27)

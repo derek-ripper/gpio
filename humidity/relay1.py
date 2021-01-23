@@ -82,7 +82,7 @@ oRL1 = sensor.Relay(Relay1_pin)
 
 ## Relay #2 NOT used as at 20 Jan 2020
 Relay2_pin = 18
-oRL2 = sensor.relay(Relay2_pin)
+oRL2 = sensor.Relay(Relay2_pin)
 oRL2.switchOFF()
 
 DHT_SENSOR  = 22
