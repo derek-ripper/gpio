@@ -15,6 +15,8 @@ Updates:
               2 channel module on a direct power line. RElay2 left in code 
               but not used. Status set that on board LED is not lit.
 22 Jan 2021 - Reworked to add LCD output dispaly.
+
+24 Jan 2021 - Add network tests for local router and Internet access
 '''
 # needed to access my other Pyton std. modules
 import sys, os
@@ -44,13 +46,16 @@ class params(object):
         self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
         self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
         self.MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
+        self.IntNetwork    =     oCfg.GetConfigValue('INTNETWORK')
+        self.ExtNetwork    =     oCfg.GetConfigValue('EXTNETWORK')
     
         self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
         self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
     
     def wrte2logfile(self):
         ### write basic data to log file
-
+        logger.write("Int Network       : "+self.IntNetwork)
+        logger.write("Ext Network       : "+self.ExtNetwork+"\n")
         logger.write("Basic Control Data")
         logger.write("Test Time         : "+str(self.TestTime)+" secs")
         logger.write("Poll interval     : "+str(self.PollTime)+" secs")
@@ -100,7 +105,15 @@ oF = FU.FileMod(oP.InputFile) # check if file updated while prog is Live
 
 def main():
     print("\nStarting RELAY1.py ...........\n")
-    lcd.write2pos("Starting .")
+    # check and Display network status on LCD
+    oTest = DU.Comms(logger)
+    rc = oTest.checknetwork(self.Int_Network() ,4)
+    lcd.write2pos("Router   Found = "+str(rc),1,1)
+
+    rc = oTest.checknetwork(self.Ext_Network() ,4)
+    lcd.write2pos("INTERNET Found = "+str(rc),2,1)
+    Sleep(3)
+    
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
     ONcount  = 0 # ditto 

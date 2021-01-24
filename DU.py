@@ -75,7 +75,7 @@ class c_logger(object):
 
 
 # Class Start ########################################################## 
-class c_comms(object):
+class Comms(object):
 ######################################################################
    def __init__(self,o_LOG):
      self.o_LOG = o_LOG
@@ -86,9 +86,9 @@ class c_comms(object):
        args = command,
        stdout = PIPE,
        shell = True )
-     print("pre textstr" )
+     print("pre  running ping command " )
      textstr = str(process.communicate()[0])
-     print("post textstr")
+     print("post running ping command ")
      # string returned starts -b'- and ends with a single -'- (ignore hyphens)
      L_text = textstr[2:-1].split("\\n")
      listlen = L_text.__len__()
@@ -101,12 +101,12 @@ class c_comms(object):
          self.o_LOG.write(L_text[0])
      return L_text
 
-   def checkextnetwork(self, pingtarget, pingcnt):
+   def checknetwork(self, pingtarget, pingcnt):
      if pingcnt <= 0:
        pingcnt = 4
-     print("call to cmdline")
+     print("call to command line for pinging")
      L_result = self.cmdline("ping " + pingtarget + " -c " + str(pingcnt))
-     print("post cmdline call")  
+
      # count all succesful pings
      icnt = 0
      for line in   L_result:
