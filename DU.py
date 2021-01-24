@@ -115,7 +115,7 @@ class Comms(object):
            
      # ping count should equal required number of actual pings
      B_Networkstatus = pingcnt == icnt
-     self.o_LOG.write("EXTERNAL NETWORK found  is : " + str(B_Networkstatus))
+     self.o_LOG.write("NETWORK found  is : " + str(B_Networkstatus)+"\n")
      return B_Networkstatus
    
 # end of class c_comms(object):########################################    

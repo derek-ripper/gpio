@@ -33,7 +33,7 @@ import os
 import DU
 import config   as CFG 
 
-class params(object):
+class Params(object):
     def __init__(self, File):
         self.InputFile = File
         self.LoadParams(self.InputFile)
@@ -42,6 +42,7 @@ class params(object):
         
     def LoadParams(self,configfile):    
         oCfg     = CFG.ReadConfig(configfile)
+        
         self.TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
         self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
         self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
@@ -54,9 +55,10 @@ class params(object):
     
     def wrte2logfile(self):
         ### write basic data to log file
+        logger.write("\nBasic Control Data")
         logger.write("Int Network       : "+self.IntNetwork)
         logger.write("Ext Network       : "+self.ExtNetwork+"\n")
-        logger.write("Basic Control Data")
+
         logger.write("Test Time         : "+str(self.TestTime)+" secs")
         logger.write("Poll interval     : "+str(self.PollTime)+" secs")
         logger.write("Max con run time  : "+str(self.MaxConRunTime)+" secs")
@@ -98,7 +100,7 @@ oHT = sensor.Humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
 
 oT  = T.timer()
 
-oP = params("config.txt")     # run time parameters      
+oP = Params("config.txt")     # run time parameters      
 
 oF = FU.FileMod(oP.InputFile) # check if file updated while prog is Live
 #####
@@ -107,12 +109,12 @@ def main():
     print("\nStarting RELAY1.py ...........\n")
     # check and Display network status on LCD
     oTest = DU.Comms(logger)
-    rc = oTest.checknetwork(self.Int_Network() ,4)
-    lcd.write2pos("Router   Found = "+str(rc),1,1)
+    rc = oTest.checknetwork(oP.IntNetwork ,4)
+    lcd.write2pos("Int. Net= "+str(rc),1,1)
 
-    rc = oTest.checknetwork(self.Ext_Network() ,4)
-    lcd.write2pos("INTERNET Found = "+str(rc),2,1)
-    Sleep(3)
+    rc = oTest.checknetwork(oP.ExtNetwork ,4)
+    lcd.write2pos("Ext. Net= "+str(rc),2,1)
+    sleep(3)
     
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
