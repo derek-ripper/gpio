@@ -6,7 +6,7 @@
 echo "##### Start of script ..:" $0
 #
 #Updates
-# 30 Aug 2109 - Add script to craete a start up log.
+# 30 Aug 2019 - Add script to craete a start up log.
 #             ie to measure amount of down time after a power
 #             failure.
 #
@@ -15,6 +15,7 @@ echo "##### Start of script ..:" $0
 # 26 October 2020 Used in HUMIIDTY project
  
 USERPROG=relay1.py
+
 ROOTPATH=/home/pi/dev/
 PROGPATH=${ROOTPATH}gpio/humidity
 LOGSPATH=${ROOTPATH}logs/
@@ -34,6 +35,8 @@ sleep 30
 
 EXT_IP=`curl ipv4.icanhazip.com`                        1>> $STDOUT  2>>$STDERR   
 
+# NB must be in program launch directory to pick up "config.txt"
+#   to set all runtime constants. uses class config.py 
 cd   $PROGPATH
 
 echo "This Script  :" $0                                 >> $STDOUT

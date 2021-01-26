@@ -87,10 +87,11 @@ lcd     = Mylcd(i2c_expander='PCF8574', address=0x27, cols=16, rows=2)
 Relay1_pin = 17
 oRL1 = sensor.Relay(Relay1_pin)
 
-## Relay #2 NOT used as at 20 Jan 2020
+## Relay #2 NOT used as at 20 Jan 2021
+#but still wired up.
 Relay2_pin = 18
 oRL2 = sensor.Relay(Relay2_pin)
-oRL2.switchOFF()
+oRL2.switchOFF() # needed to define state, hence switch relay #2 LCD OFF
 
 DHT_SENSOR  = 22
 DHT_PIN     = 4  
