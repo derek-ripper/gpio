@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 ''' 
 **********************************************************************
-* Filename      : ac3.py
+* Filename      : cryptit.py
 * Purpose       : ACCESS CONTROL -- hide passwords
-* Created       : 27 Nov 2020 
+* Created       : 27 Nov 2020 onwards!!
 * Author        : Derek
 **********************************************************************
 * 
@@ -16,6 +16,7 @@ class Acctl(object):
         self.filelocation = filepath
         self.keyfilename,self.txtfilename = self.bld_filenames(filepath, filestem)
         self.option = option.upper()
+        
         if   self.option == "NEW":
             self.key = self.set_encryptkey()
         elif self.option == "OLD":
@@ -89,6 +90,6 @@ class Acctl(object):
 #######################################################################
 #######################################################################
 if __name__ == "__main__":
-    crypt = Acctl("old","/home/pi/dev/gpio/ac/","FourthTest")
+    crypt = Acctl("old","/home/pi/dev/gpio/ac/","Test#1")
     ans   = crypt.test()
     print("From File: "+crypt.txtfilename+"\nUnencrypted text is: "+str(ans))

@@ -1,0 +1,53 @@
+#!/bin/bash
+########################################################################
+# Author   : Derek Ripper
+# Created  : Jan 2021'ish 
+# Purpose  : Script  to run any .py program and redirect std out & err
+#            for access control project
+
+echo "##### Start of script ..:" $0
+#
+#Updates
+
+
+USERPROG=r1.py
+ROOTPATH=/home/pi/dev/
+PROGPATH=${ROOTPATH}/gpio/ac/
+LOGSPATH=${ROOTPATH}logs/
+
+# ensure path for log files is there
+mkdir -p ${LOGSPATH}                      
+
+STDOUT=${LOGSPATH}stdoutac.txt
+STDERR=${LOGSPATH}stderrac.txt
+
+# NB without "sleep" then the createstartlog.bsh uses the time last 
+#    seen at shutdown!!
+# sleep 30 # wait for RTC to catch up!
+
+
+EXT_IP=`curl ipv4.icanhazip.com`                             1>> $STDOUT  2>>$STDERR   
+
+cd   $PROGPATH
+
+echo "This Script  :" $0                                 >> $STDOUT
+echo "Function     : Redirection of std out and std err" >> $STDOUT
+echo "File created :" `date`                             >> $STDOUT
+echo "External  IP :" $EXT_IP                            >> $STDOUT
+echo "For program  :" $USERPROG                          >> $STDOUT
+echo "Pi uptime    :" `uptime -p`                        >> $STDOUT
+echo "Prog   :" $USERPROG
+echo "STD OUT:" $STDOUT
+echo "STD ERR:" $STDERR
+echo " "
+export MYLOC="~/dev/gpio/himidity"
+
+
+
+python3 $USERPROG                                        1>> $STDOUT  2>>$STDERR   &
+
+echo " "                                                 >> $STDOUT
+echo "##### All Done in script:" $0                      >> $STDOUT
+
+echo " "     
+echo "##### All Done in script:" $0   
