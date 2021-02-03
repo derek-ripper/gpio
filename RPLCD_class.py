@@ -106,6 +106,18 @@ class Mylcd(CharLCD):
         0b11111,
         0b11111,
         ]
+        #char=3 as a Left Pointing Arrow
+        lh_arrow = [
+        0b00000,
+        0b00100,
+        0b01000,
+        0b11111,
+        0b01000,
+        0b00100,
+        0b00000,
+        0b00000,
+        ]
         self.create_char(0, degree)
         self.create_char(1, box)    
         self.create_char(2, block)
+        self.create_char(3, lh_arrow)

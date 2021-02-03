@@ -164,7 +164,7 @@ def main():
         lcd.write2pos("RH%={0:0.1f}".format(hvalue),1,1)
         lcd.write2pos(" "+chr(0)+"C={0:0.1f}".format(tvalue), 1,9)
        
-        lcd.write2pos("{0:0.1f}{1}{2}{3:0.1f}".format(oP.OffThres, chr(126), chr(126), oP.OnThres), 2,1)
+        lcd.write2pos("{0:0.1f}{1}{2}{3:0.1f}".format(oP.OffThres, chr(3), chr(126), oP.OnThres), 2,1)
         PollCount += 1
         logger.write("")
         logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
