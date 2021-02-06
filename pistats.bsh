@@ -1,0 +1,33 @@
+#!/bin/bash
+# by     : Derek Ripper
+# created: 16 February 2021
+# Purpose: List useful key params od the RaspPi
+#          
+########################################################################
+# Updates:
+#  
+########################################################################
+DATETIME=`date`
+TARGET='/home/pi/Documents/logs/swapmemorylog.txt'
+
+echo "Current user is: "$USER
+echo
+echo "Host Name   is : "$HOSTNAME
+echo
+echo "WiFi SSIDs found are:"
+echo
+# File where wifi connections are stored from previouly conneected
+# wifi networks. Shows; SSID, psk(password), and key_mgmt(security type)
+SOURCE='/etc/wpa_supplicant/'
+FILE=$SOURCE'wpa_supplicant.conf'
+cat $FILE | grep -i ssid
+
+echo
+CPUTEMP=`/opt/vc/bin/vcgencmd measure_temp`
+echo "CPU Temperature : "$CPUTEMP
+echo
+echo "MEMORY from command 'free -h'"
+free -h
+echo
+echo "Disk (SD card) Space from 'df -h'"
+df -h
