@@ -3,29 +3,37 @@
 **********************************************************************
 * Filename      : relay1.py
 * Purpose       : To control mains power supply to dumb Dehumidfier
-* Created       : Dec 2019 fully reworked in Oct 2020 
+* Created       : Dec 2019 fully reworked in Jan 2021 
 * Author        : Derek
 **********************************************************************
 * 16 Nov 2020 - make config data reload if fileexternally changed.
 *
 **********************************************************************
-Mod to test merge on GitHUB ####
+Updates:
+20 Jan 2021 - DHTsensor now powered from a GPIO pin. Hence new routine to 
+              reaset it. Previously done using spare relay in the 
+              2 channel module on a direct power line. RElay2 left in code 
+              but not used. Status set that on board LED is not lit.
+22 Jan 2021 - Reworked to add LCD output dispaly.
+
+24 Jan 2021 - Add network tests for local router and Internet access
 '''
+# needed to access my other Pyton std. modules
+import sys, os
+sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
+
 import RPi.GPIO as GPIO
 from time import sleep
+from  RPLCD_class import Mylcd
 
 import sensors   as sensor
 import mytimer   as T
 import FileClass as FU
-   
-
-# needed to access my other Pyton std. modules
-import os, sys
-sys.path.append(os.path.abspath("/home/pi/dev/gpio"))
+import os
 import DU
 import config   as CFG 
 
-class params(object):
+class Params(object):
     def __init__(self, File):
         self.InputFile = File
         self.LoadParams(self.InputFile)
@@ -34,18 +42,23 @@ class params(object):
         
     def LoadParams(self,configfile):    
         oCfg     = CFG.ReadConfig(configfile)
+        
         self.TestTime      = int(oCfg.GetConfigValue('TESTTIME'))
         self.PollTime      = int(oCfg.GetConfigValue('POLLTIME'))
         self.RestTime      = int(oCfg.GetConfigValue('RESTTIME'))
         self.MaxConRunTime = int(oCfg.GetConfigValue('MAXCONRUNTIME'))
+        self.IntNetwork    =     oCfg.GetConfigValue('INTNETWORK')
+        self.ExtNetwork    =     oCfg.GetConfigValue('EXTNETWORK')
     
         self.OffThres = float(oCfg.GetConfigValue('OFFTHRES')) # % RH - Threshold to turn OFF power
         self.OnThres  = float(oCfg.GetConfigValue('ONTHRES'))  # % RH - Threshold to turn ON  power
     
     def wrte2logfile(self):
         ### write basic data to log file
+        logger.write("\nBasic Control Data")
+        logger.write("Int Network       : "+self.IntNetwork)
+        logger.write("Ext Network       : "+self.ExtNetwork+"\n")
 
-        logger.write("Basic Control Data")
         logger.write("Test Time         : "+str(self.TestTime)+" secs")
         logger.write("Poll interval     : "+str(self.PollTime)+" secs")
         logger.write("Max con run time  : "+str(self.MaxConRunTime)+" secs")
@@ -58,37 +71,52 @@ class params(object):
     def ReLoadParams(self):
         self.LoadParams(self.InputFile)
         self.wrte2logfile()
+# set Pi pin config to "Board" NOT Physical pin numbers
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 ##### Object Defintions
 logger  = DU.c_logger("/home/pi/dev/logs","log1.txt")
 logger2 = DU.c_logger("/home/pi/dev/logs","log2.txt")
 
-# set Pi pin config to "Board" NOT Physical pin numbers
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+lcd     = Mylcd(i2c_expander='PCF8574', address=0x27, cols=16, rows=2)
 
-# Realy #1 switched mains voltage !
+
+# Realy #1 switched mains voltage !| grep re
+
 Relay1_pin = 17
-oRL1 = sensor.relay(Relay1_pin)
+oRL1 = sensor.Relay(Relay1_pin)
 
-# Relay #2 switched 3.3 volts
+## Relay #2 NOT used as at 20 Jan 2021
+#but still wired up.
 Relay2_pin = 18
-oRL2 = sensor.relay(Relay2_pin)
+oRL2 = sensor.Relay(Relay2_pin)
+oRL2.switchOFF() # needed to define state, hence switch relay #2 LCD OFF
 
-DHT_SENSOR = 22
-DHT_PIN    = 4  
+DHT_SENSOR  = 22
+DHT_PIN     = 4  
+DHT_PWR_PIN = 27
 
-oHT = sensor.humidity(DHT_SENSOR,DHT_PIN)
+oHT = sensor.Humidity(DHT_SENSOR,DHT_PIN, DHT_PWR_PIN)
 
 oT  = T.timer()
 
-oP = params("config.txt")     # run time parameters      
+oP = Params("config.txt")     # run time parameters      
 
 oF = FU.FileMod(oP.InputFile) # check if file updated while prog is Live
 #####
 
 def main():
     print("\nStarting RELAY1.py ...........\n")
+    # check and Display network status on LCD
+    oTest = DU.Comms(logger)
+    rc = oTest.checknetwork(oP.IntNetwork ,4)
+    lcd.write2pos("Int. Net= "+str(rc),1,1)
+
+    rc = oTest.checknetwork(oP.ExtNetwork ,4)
+    lcd.write2pos("Ext. Net= "+str(rc),2,1)
+    sleep(3)
+    
     ### COUNTERS
     OFFcount = 0 # set in the intialisaton process
     ONcount  = 0 # ditto 
@@ -110,12 +138,10 @@ def main():
 
     
     ##### Start Infinte Polling Loop
+    lcd.clear()
     while True: 
 
-        PollCount += 1
-        logger.write("")
-        logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
-        sleep(oP.PollTime)
+
         
         # Check if config.txt has been updated while program is running?
         if oF.Changed():
@@ -126,24 +152,33 @@ def main():
             logger.write("")  
         else:
             pass
-            
+         
+         
+        
         # READ DHT22 sensor values 
         hvalue, tvalue =  oHT.read_dht()
         etime = oT.secs2dhms(oT.elapsedtime()) 
         logger.write ("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
         logger2.write("Humidity : "+str(hvalue)+", Temp: "+str(tvalue)+" Elapased= "+str(etime) )
+
+        lcd.write2pos("RH%={0:0.1f}".format(hvalue),1,1)
+        lcd.write2pos(" "+chr(0)+"C={0:0.1f}".format(tvalue), 1,9)
+       
+        lcd.write2pos("{0:0.1f}{1}{2}{3:0.1f}".format(oP.OffThres, chr(3), chr(126), oP.OnThres), 2,1)
+        PollCount += 1
+        logger.write("")
+        logger.write("*** Poll # = "+str(PollCount)+"  Time frm Start : "+str(oT.secs2dhms(int(oT.timefromprogramstart()) )))
+
         
         if(hvalue == 999):
             errcnt +=1
-            if(errcnt >100):
+            if(errcnt >1000):
                 logger.write("ERROR: Maxiumm sensor read Errors/Resets exceeded - program halted")
                 destroy()
                 break
             else: # take corrective action and rseet DHT22 by repowering it
                 logger.write("ERROR: Reading DHT22 values -- Power OFF DHT-22, count: "+str(errcnt))
-                oRL2.switchON()  # NO position
-                sleep(2)
-                oRL2.switchOFF() # NC position
+                oHT.reset()
                 logger.write("ERROR: Reading DHT22 values -- Power ON  DHT-22")
 
 
@@ -154,6 +189,7 @@ def main():
                 logger.write("Zone_ON   SWITCHing  ON, count= "+str(ONcount))
                 oT.resetstarttime()
                 oRL1.switchON()
+                lcd.write2pos("ON  ",2,13)
             else:          # 2nd or subsequent time in this code section
                 logger.write("Zone_ON   State = SWITCHed  ON")
                 CheckMaxRunTime(oP.MaxConRunTime, oP.RestTime, oP.PollTime,  ON_FLAG,ONcount,OFFcount)            
@@ -165,9 +201,11 @@ def main():
                 logger.write("Zone_OFF   SWITCHing OFF,count= "+str(OFFcount))
                 oT.calccumruntime()
                 oRL1.switchOFF()
+                lcd.write2pos("OFF ",2,13)
                 
             else:
                 logger.write("Zone_OFF   State = SWITCHed OFF")
+                lcd.write2pos("OFF ",2,13)
     
         else: # Between the Max and Min thresholds
             if ON_FLAG:
@@ -175,7 +213,8 @@ def main():
                 CheckMaxRunTime(oP.MaxConRunTime, oP.RestTime, oP.PollTime, ON_FLAG, ONcount,OFFcount )
             else:
                 logger.write("Zone_ONorOFF   State = SWITCHed OFF")
-
+                
+        sleep(oP.PollTime)
         logger.write("*** END OF POLLING LOOP")             
 
     ##### End of Polling Loop
@@ -197,17 +236,20 @@ def CheckMaxRunTime(MaxConRunTime, RestTime, PollTime, ON_FLAG,ONcount,OFFcount)
             ttot = oT.secs2dhms(oT.getcumruntime() )
             logger.write("   Cum. Continuous running time to date is  : "+str(ttot) )
             
+            lcd.write2pos("REST",2,13)
             sleep(RestTime)
             oT.resetstarttime()
             ONcount +=1
             logger.write("   SWITCHing  ON. count: "+str(OFFcount))
 
             oRL1.switchON()
+            lcd.write2pos("ON  ",2,13)
         else:
             logger.write("   Max run time NOT exceeded.  On count: "+str(ONcount)+", OFF count: "+str(OFFcount))
 
 def destroy():
     oRL1.switchOFF()
+    lcd.cleanup()
     GPIO.cleanup()
     print("\nTime since program start: "+str(oT.secs2dhms(int(oT.timefromprogramstart()) ))) 
     print(  "Total ON time           : "+str(oT.secs2dhms(oT.getcumruntime()) ))

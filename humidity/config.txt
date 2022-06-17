@@ -7,6 +7,10 @@
 DataPath = /home/pi/dev/gpio/humidity/
 
 ######################################################
+# locations for ping tests
+INTNETWORK = "192.168.1.1"
+EXTNETWORK = "8.8.8.8"
+
 # All times in seconds
 TESTTIME       =  10
 POLLTIME       =  30
@@ -15,6 +19,6 @@ RESTTIME       =  20
 MAXCONRUNTIME  =  60
 
 # Humidity ON & OFF Thresholds in % RH  
-ONTHRES        = 48.00
-OFFTHRES       = 47.5
+ONTHRES        = 38.00
+OFFTHRES       = 37.50
 ######################################################

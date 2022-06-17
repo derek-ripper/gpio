@@ -1,0 +1,23 @@
+#!/bin/bash
+# Author    : Derek Ripper
+# Created   : 02 Feb 2021
+# Purpose   : To find registeered wifi networks
+
+########################################################################
+# Updates:
+
+########################################################################
+### start msg
+echo -e "\n### Enter script: $0"
+
+# File where wifi connections are stored from previouly conneected
+# wifi networks. Shows; SSID, psk(password), and key_mgmt(security type)
+SOURCE='/etc/wpa_supplicant/'
+FILE=$SOURCE'wpa_supplicant.conf'
+
+echo $FILE
+echo -e "\nFile wpa_supplicant.conf contents ....\n"
+cat $FILE
+
+echo -e "\nSSID's found are........"
+cat $FILE | grep -i ssid
