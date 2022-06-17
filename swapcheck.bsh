@@ -28,7 +28,7 @@ echo "Used     swap:"$usedswap
 echo "prevoous swap:"$lastswap
 
 
-newstring=$usedswap";"$xDATETIME
+newstring=$usedswap";"$DATETIME
 
 
 if  [ $usedswap  -ne  $lastswap ] ; then

@@ -81,17 +81,17 @@ from email.mime.multipart import MIMEMultipart
     
 def SendEMail(bodytext, Device,  ElapsedTime):
     # Set Constants
-    SMTP_SERVER    = 'smtp.gmail.com'
-    SMTP_PORT      = 587
-    SMTP_TIMEOUT   = 60
-    EMAIL_USERNAME = 'etrf2me@gmail.com'
-    EMAIL_PASSWORD = 'Wi2ard:RmDaTa'
+    #SMTP_SERVER    = 'smtp.gmail.com'
+    #SMTP_PORT      = 587
+    #SMTP_TIMEOUT   = 60
+    #EMAIL_USERNAME = 'etrf2me@gmail.com'
+    #EMAIL_PASSWORD = 'Wi2ard:RmDaTa'
 	
-    # SMTP_SERVER    = "smtp.live.com"
-    # SMTP_PORT      = 587
-    # SMTP_TIMEOUT   = 10
-    # EMAIL_USERNAME = 'derek.ripper@hotmail.co.uk'
-    # EMAIL_PASSWORD = 'DAR@scNo:7'
+    SMTP_SERVER    = "smtp-mail.outlook.com"
+    SMTP_PORT      = 587
+    SMTP_TIMEOUT   = 10
+    EMAIL_USERNAME = 'etrf2me@outlook.com'
+    EMAIL_PASSWORD = 'MyNAC#4RPi;'
     
     EMAIL_RECIPIENT      = 'derek.ripper@gmail.com'
   
