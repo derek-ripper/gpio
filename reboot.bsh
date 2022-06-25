@@ -1,0 +1,24 @@
+#!/bin/bash
+# file   : reboot.bsh
+# by     : Derek Ripper
+# created: 25 June 2022
+# Purpose: Used  by crontab ro reboot Pi every month.
+#          Needed as memory leak used up all swap space evnetually
+#          causing Pi to hang and not to be contactable by VNC. 
+########################################################################
+
+DATETIME=`date`
+TARGET1='/home/pi/Documents/logs/GPIO_log.txt'
+TARGET2='/home/pi/Documents/logs/swapmemorylog.txt'
+
+msga="##### Scheduled MONTHLY ReBoot for swapmem leaking problem"
+msgb="##### at: "$DATETIME
+
+echo $msga >> $TARGET1
+echo $msgb >> $TARGET1
+
+
+echo $msga >> $TARGET2
+echo $msgb >> $TARGET2
+
+sudo shutdown -r now
