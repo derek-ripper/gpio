@@ -86,7 +86,9 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     #SMTP_TIMEOUT   = 60
     #EMAIL_USERNAME = 'etrf2me@gmail.com'
     #EMAIL_PASSWORD = 'Wi2ard:RmDaTa'
-	
+# 13 June 2023 (at cottage)
+# outlook smtp failing omn 10 sec timeout!
+# changing to  60 sec seems to hav efixed the problem	
     SMTP_SERVER    = "smtp-mail.outlook.com"
     SMTP_PORT      = 587
     SMTP_TIMEOUT   = 60
