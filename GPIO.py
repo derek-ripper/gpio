@@ -89,9 +89,9 @@ def SendEMail(bodytext, Device,  ElapsedTime):
 	
     SMTP_SERVER    = "smtp-mail.outlook.com"
     SMTP_PORT      = 587
-    SMTP_TIMEOUT   = 10
+    SMTP_TIMEOUT   = 60
     EMAIL_USERNAME = 'etrf2me@outlook.com'
-    EMAIL_PASSWORD = 'MyNAC#4RPi;'
+    EMAIL_PASSWORD = 'MyNAC#4RPi;' 
     
     EMAIL_RECIPIENT      = 'derek.ripper@gmail.com'
   
@@ -105,7 +105,7 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     # gather tech info and  append to body text in email
     bodytext = GetInfo(bodytext)
     content  = MIMEText(bodytext,'plain')
-
+ 
     outer.attach(content)
      
     # add multiple attachments from a single defined folder
