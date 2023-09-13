@@ -340,7 +340,7 @@ POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 
 ###### Instantiate GPIO checking objects
 chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-Water level",False)# False  indicates state of pin in NON-FAULT condition = logical 1 or 3v
-chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     True) # True
+chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     False)# False sensor chaged 08/09/2023
 chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 
 o_LOG.write("Data from Pi device: " + PI_ID )  
