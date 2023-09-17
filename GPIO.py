@@ -208,14 +208,15 @@ def emailCreds():
         o_LOG.write("EMAIL DATA  FILE: "+filename)
         
         key_file = open(filename,"r")
+        user_pw = key_file.readline()
+
+        user, pw = user_pw.split("=")
+	
+        key_file.close()
     except:
         o_LOG.write("ERROR - Cannot open file for email credentials: "+filename)
         
-    user_pw = key_file.readline()
 
-    user, pw = user_pw.split("=")
-	
-    key_file.close()
     return user.strip(), pw.strip()
 
 ###############################################################################    
