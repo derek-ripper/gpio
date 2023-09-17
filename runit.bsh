@@ -15,14 +15,21 @@ echo "##### Start of script ..:" $0
 # 14 NOV 2020 added -p to mkdir to stopfailure if dir exists
 #              added ipv4. prefix to icanhazip.com - sappears that Sky 
 #              give both ip6 and ip4 addresses
-
+#########################################################################
+# 17 Sep 2023  Now read email credentials from USB stick.
+#########################################################################
 USERPROG=GPIO.py
 ROOTPATH=/home/pi/Documents/
 PROGPATH=${ROOTPATH}gpio/
 LOGSPATH=${ROOTPATH}logs/
 
 # ensure path for log files is there
-mkdir -p ${LOGSPATH}                      
+mkdir -p ${LOGSPATH}    
+                  
+# set up memory stick for email data
+USB_STICK="/media/pi/RASPPI_DATA"
+export RASPPI_DATA=$USB_STICK/rpi_data.txt
+
 
 STDOUT=${LOGSPATH}stdout.txt
 STDERR=${LOGSPATH}stderr.txt
@@ -42,9 +49,10 @@ echo "File created :" `date`                             >> $STDOUT
 echo "External  IP :" $EXT_IP                            >> $STDOUT
 echo "For program  :" $USERPROG                          >> $STDOUT
 echo "Pi uptime    :" `uptime -p`                        >> $STDOUT
-echo "Prog   :" $USERPROG
-echo "STD OUT:" $STDOUT
-echo "STD ERR:" $STDERR
+echo "Prog         :" $USERPROG
+echo "Email data   :" $RASPPI_DATA                       >> $STDOUT
+echo "STD OUT      :" $STDOUT                            >> $STDOUT
+echo "STD ERR      :" $STDERR 
 echo " "
 
 

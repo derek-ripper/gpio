@@ -84,16 +84,19 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     #SMTP_SERVER    = 'smtp.gmail.com'
     #SMTP_PORT      = 587
     #SMTP_TIMEOUT   = 60
-    #EMAIL_USERNAME = 'etrf2me@gmail.com'
-    #EMAIL_PASSWORD = 'Wi2ard:RmDaTa'
+    #EMAIL_USERNAME = emailAddress
+    #EMAIL_PASSWORD = emailPassword
 # 13 June 2023 (at cottage)
 # outlook smtp failing omn 10 sec timeout!
-# changing to  60 sec seems to hav efixed the problem	
+# changing to  60 sec seems to have fixed the problem	
+
+    emailAddress, emailPassword = emailCreds()
+    
     SMTP_SERVER    = "smtp-mail.outlook.com"
     SMTP_PORT      = 587
     SMTP_TIMEOUT   = 60
-    EMAIL_USERNAME = 'etrf2me@outlook.com'
-    EMAIL_PASSWORD = 'MyNAC#4RPi;' 
+    EMAIL_USERNAME = emailAddress
+    EMAIL_PASSWORD = emailPassword 
     
     EMAIL_RECIPIENT      = 'derek.ripper@gmail.com'
   
@@ -196,6 +199,24 @@ def SendEMail(bodytext, Device,  ElapsedTime):
           o_LOG.write("FAILED! SMTPLIB object not instantiated for: " + Device)
           o_LOG.write(lmsg)
           o_LOG.write("")
+
+###############################################################################    
+def emailCreds():
+    filename = os.environ['RASPPI_DATA']
+    
+    try:
+        o_LOG.write("EMAIL DATA  FILE: "+filename)
+        
+        key_file = open(filename,"r")
+    except:
+        o_LOG.write("ERROR - Cannot open file for email credentials: "+filename)
+        
+    user_pw = key_file.readline()
+
+    user, pw = user_pw.split("=")
+	
+    key_file.close()
+    return user.strip(), pw.strip()
 
 ###############################################################################    
 def cmdline(command):
@@ -309,7 +330,7 @@ o_TempLOG = DU.c_logger(LOGS_DIR,"Temperature_log.txt")
 
 ### In case of recovery from mains power failure
 #   allow time for router and TPLink (Ethernet over mains) units to initialise! 
-wait2start = 60 * 4
+wait2start = 5 #60 * 4 ## remove!!
 T.sleep(wait2start)
 o_LOG.write("Starting program after a wait of  " + str(wait2start) + " seconds.") 
                
