@@ -36,7 +36,7 @@ STDERR=${LOGSPATH}stderr.txt
 
 # NB without "sleep" then the createstartlog.bsh uses the time last 
 #    seen at shutdown!!
-sleep 30 # wait for RTC to catch up!
+sleep 1 #### 30 # wait for RTC to catch up!
 
 
 EXT_IP=`curl ipv4.icanhazip.com`                             1>> $STDOUT  2>>$STDERR   

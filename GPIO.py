@@ -79,22 +79,16 @@ from email.mime.base      import MIMEBase
 from email.mime.text      import MIMEText
 from email.mime.multipart import MIMEMultipart
     
-def SendEMail(bodytext, Device,  ElapsedTime):
-    # Set Constants
-    #SMTP_SERVER    = 'smtp.gmail.com'
-    #SMTP_PORT      = 587
-    #SMTP_TIMEOUT   = 60
-    #EMAIL_USERNAME = emailAddress
-    #EMAIL_PASSWORD = emailPassword
-# 13 June 2023 (at cottage)
-# outlook smtp failing omn 10 sec timeout!
-# changing to  60 sec seems to have fixed the problem	
+def SendEMail(bodytext, Device,  ElapsedTime):	
 
-    emailAddress, emailPassword = emailCreds()
+    smtpServer,smtpPort,smtpTimeout,emailAddress,emailPassword = emailCreds()
+    #o_LOG.write("server:"+smtpServer)
+    #o_LOG.write("port:"+str(smtpPort))
+    #o_LOG.write("timeout:"+str(smtpTimeout))
     
-    SMTP_SERVER    = "smtp-mail.outlook.com"
-    SMTP_PORT      = 587
-    SMTP_TIMEOUT   = 60
+    SMTP_SERVER    = smtpServer
+    SMTP_PORT      = smtpPort
+    SMTP_TIMEOUT   = smtpTimeout
     EMAIL_USERNAME = emailAddress
     EMAIL_PASSWORD = emailPassword 
     
@@ -208,16 +202,21 @@ def emailCreds():
         o_LOG.write("EMAIL DATA  FILE: "+filename)
         
         key_file = open(filename,"r")
-        user_pw = key_file.readline()
+        smtp_data = key_file.readline()
 
-        user, pw = user_pw.split("=")
+        server, port, timeout, user, pw = smtp_data.split("=")
 	
         key_file.close()
     except:
         o_LOG.write("ERROR - Cannot open file for email credentials: "+filename)
+        server = "Unknown"
+        port    = "123"
+        timeout = "123"
+        user    = "No_one"
+        pw      = "Not_set"
         
-
-    return user.strip(), pw.strip()
+  
+    return server.strip(),int(port),int(timeout),user.strip(), pw.strip()
 
 ###############################################################################    
 def cmdline(command):
@@ -331,7 +330,7 @@ o_TempLOG = DU.c_logger(LOGS_DIR,"Temperature_log.txt")
 
 ### In case of recovery from mains power failure
 #   allow time for router and TPLink (Ethernet over mains) units to initialise! 
-wait2start = 5 #60 * 4 ## remove!!
+wait2start = 10 #60 * 4 #temp reduction
 T.sleep(wait2start)
 o_LOG.write("Starting program after a wait of  " + str(wait2start) + " seconds.") 
                
