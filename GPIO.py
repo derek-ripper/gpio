@@ -82,10 +82,17 @@ from email.mime.multipart import MIMEMultipart
 def SendEMail(bodytext, Device,  ElapsedTime):	
 
     smtpServer,smtpPort,smtpTimeout,emailAddress,emailPassword = emailCreds()
-    #o_LOG.write("server:"+smtpServer)
-    #o_LOG.write("port:"+str(smtpPort))
-    #o_LOG.write("timeout:"+str(smtpTimeout))
-    
+    #xsmtp = repr(smtpServer)
+    #o_LOG.write("server :"+xsmtp)
+    #xport = repr(smtpPort)
+    #o_LOG.write("port   :"+xport)
+    #xtime = repr(smtpTimeout)
+    #o_LOG.write("timeout:"+xtime)
+    #xmail = repr(emailAddress)
+    #o_LOG.write("email  :"+xmail)
+    #xpw = repr(emailPassword)
+    #o_LOG.write("pw     :"+xpw)
+        
     SMTP_SERVER    = smtpServer
     SMTP_PORT      = smtpPort
     SMTP_TIMEOUT   = smtpTimeout
@@ -330,7 +337,7 @@ o_TempLOG = DU.c_logger(LOGS_DIR,"Temperature_log.txt")
 
 ### In case of recovery from mains power failure
 #   allow time for router and TPLink (Ethernet over mains) units to initialise! 
-wait2start = 10 #60 * 4 #temp reduction
+wait2start = 60 * 4 #temp reduction
 T.sleep(wait2start)
 o_LOG.write("Starting program after a wait of  " + str(wait2start) + " seconds.") 
                
@@ -377,6 +384,9 @@ try:
         ElapsedTime = o_DT.elapsedtime()
         	
 		# write temperature readings to log file every hour
+        o_TempLOG.write("### DEBUG: poll and Ncount = "+str(poll)+" -- "+str(Ncount) )		
+        o_TempLOG.write("### DEBUG: int(poll*Ncount = "+str(int(poll*Ncount)))
+
         if(int(poll*Ncount) % 3600 == 0 or Ncount == 1):
             OBtemp = str(DU.gettemp("On_Board",o_cfg))  
             INtemp = str(DU.gettemp("Internal",o_cfg))  
