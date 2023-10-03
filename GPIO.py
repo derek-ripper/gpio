@@ -287,8 +287,11 @@ class gpio_input_status(object):
             self.FaultTxtOK     = "LOW "
             self.FaultTxtNotOK  = "HIGH"
 
-        
-        GPIO.setup(self.pin, GPIO.IN)
+        if(self.pin == 16):
+            GPIO.setup(PIN_E, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        else:
+             GPIO.setup(self.pin, GPIO.IN)
+             
         GPIO.setup(self.pout,GPIO.OUT)
 
     def check(self):
@@ -354,11 +357,15 @@ ElapsedTime = 0
 # GPIO pin usage ......
 PIN_B       = 27     # Pi pin 13 Water level (moved for RTC in Ver Mk4 of s/w)
 PIN_S       = 17     # Pi pin 11 Sewer  Flooded ( ditto )
-PIN_X       = 10     # Pi pin 19  Spare
+PIN_X       = 10     # Pi pin 19 was Boiler "lockout" - now garage water level Spare
+PIN_E       = 16     # Pi pin 36  Used to force an email to be sent
+
 
 POUT_B      = 24     # Pi pin 18 Water level LED(Red)
 POUT_S      = 25     # Pi pin 22 Sewer  LED(Green)
-POUT_X      = 23     # Pi pin 16   SPARE
+POUT_X      = 23     # Pi pin 16  
+POUT_E      =  6     # Pi pin 31  No LED attached to this pin! 
+
 
 POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 
@@ -370,6 +377,7 @@ POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
 chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-Water level",False)# False  indicates state of pin in NON-FAULT condition = logical 1 or 3v
 chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     False)# False sensor chaged 08/09/2023
 chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
+chk_E = gpio_input_status(PIN_E, POUT_E, PI_ID +"-Test Email", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 
 o_LOG.write("Data from Pi device: " + PI_ID )  
 o_LOG.write("Program Name       : " + PROGRAM )  
@@ -384,8 +392,6 @@ try:
         ElapsedTime = o_DT.elapsedtime()
         	
 		# write temperature readings to log file every hour
-        o_TempLOG.write("### DEBUG: poll and Ncount = "+str(poll)+" -- "+str(Ncount) )		
-        o_TempLOG.write("### DEBUG: int(poll*Ncount = "+str(int(poll*Ncount)))
 
         if(int(poll*Ncount) % 3600 == 0 or Ncount == 1):
             OBtemp = str(DU.gettemp("On_Board",o_cfg))  
@@ -408,6 +414,10 @@ try:
                 
         T.sleep(sleeptime)
         chk_X.check() # ON/OFF sensor -- hopefully for LOW Boiler Pressure switch
+        DU.blink(GPIO, blinktime, POUT_BLINK)  
+        
+        T.sleep(sleeptime)
+        chk_E.check() # Used to send a test email - pin control by seperate CL program
         DU.blink(GPIO, blinktime, POUT_BLINK)  
 
 except KeyboardInterrupt:
