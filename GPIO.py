@@ -71,7 +71,13 @@
 #     takes longer to boot so we dont  miss the first generated email at Pi 
 #     boot up.
 # 2 - change boiler sensor to water level sensor. logic is inverted.
-###############################################################################
+################################################################################
+# Sep/Oct 2023
+# 1 - added Pin 16 to falcilate an emial test from a remote program 
+# 2 - add NChecks for number of inputs to scan (was 3 now 4)
+# 3 - for email attachem,ents added fh.close() which was previously not set
+# 4 - Email credentials now resd from USB mem stick and not hard coded!
+################################################################################
 import os
 import smtplib
 from email                import encoders
@@ -82,16 +88,7 @@ from email.mime.multipart import MIMEMultipart
 def SendEMail(bodytext, Device,  ElapsedTime):	
 
     smtpServer,smtpPort,smtpTimeout,emailAddress,emailPassword = emailCreds()
-    #xsmtp = repr(smtpServer)
-    #o_LOG.write("server :"+xsmtp)
-    #xport = repr(smtpPort)
-    #o_LOG.write("port   :"+xport)
-    #xtime = repr(smtpTimeout)
-    #o_LOG.write("timeout:"+xtime)
-    #xmail = repr(emailAddress)
-    #o_LOG.write("email  :"+xmail)
-    #xpw = repr(emailPassword)
-    #o_LOG.write("pw     :"+xpw)
+    
         
     SMTP_SERVER    = smtpServer
     SMTP_PORT      = smtpPort
@@ -115,26 +112,30 @@ def SendEMail(bodytext, Device,  ElapsedTime):
     outer.attach(content)
      
     # add multiple attachments from a single defined folder
-    # dir = "/home/pi/Documents/Live/logs/"
+    # dir = "/home/pi/Documents/gpio/logs/"
     dir = o_LOG.GetLogDirName()	
     attachments = ()  # empty list
     attachments = os.listdir(dir)
    
     for file in attachments:
-     file = os.path.join(dir,file)
+        file = os.path.join(dir,file)
      
-     try:  
-        with open(file,'rb') as fh:
-           msg = MIMEBase('application',"octet-stream")
-           msg.set_payload(fh.read())
-		   
-        encoders.encode_base64(msg)	
-        msg.add_header('Content-Disposition','attachment',
-        filename=os.path.basename(file))	
-        outer.attach(msg)
-     except:   
-        print("Attachment Error: "+sys.exc_info()[0])    
-          
+        try:  
+            with open(file,'rb') as fh:
+                msg = MIMEBase('application',"octet-stream")
+                msg.set_payload(fh.read())
+                fh.close()
+		    
+                encoders.encode_base64(msg)	
+                msg.add_header('Content-Disposition','attachment',
+                filename=os.path.basename(file))	
+                outer.attach(msg)
+        except: 
+            errmsg =  "Attachment Error: "+sys.exc_info()[0] 
+            o_log.write(errmsg) 
+
+
+		
     composed = outer.as_string()
     
     # Now try and  send completed mail with attachments    
@@ -388,7 +389,8 @@ try:
     while True:   
         Ncount      = Ncount +1
         blinktime   = 2
-        sleeptime   = poll/3 - blinktime 
+        NChecks     = 4
+        sleeptime   = poll/Nchecks - blinktime 
         ElapsedTime = o_DT.elapsedtime()
         	
 		# write temperature readings to log file every hour
