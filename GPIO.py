@@ -73,10 +73,12 @@
 # 2 - change boiler sensor to water level sensor. logic is inverted.
 ################################################################################
 # Sep/Oct 2023
-# 1 - added Pin 16 to falcilate an emial test from a remote program 
+# 1 - added Pin 16 to falcilate an email test from an external program.
+#     ie: test_email.py 
 # 2 - add NChecks for number of inputs to scan (was 3 now 4)
-# 3 - for email attachem,ents added fh.close() which was previously not set
-# 4 - Email credentials now resd from USB mem stick and not hard coded!
+# 3 - email attachements added fh.close() which was previously not set.
+#     Did NOT solve memory leak problem.    
+# 4 - Email credentials now read from USB mem stick and not hard coded!
 ################################################################################
 import os
 import smtplib
@@ -355,28 +357,27 @@ poll        = 12     # pollimg interval in seconds
 Ncount      = 0      # Count number of polls
 ElapsedTime = 0
 
-# GPIO pin usage ......
+# GPIO INPUT pin usage ......
 PIN_B       = 27     # Pi pin 13 Water level (moved for RTC in Ver Mk4 of s/w)
 PIN_S       = 17     # Pi pin 11 Sewer  Flooded ( ditto )
-PIN_X       = 10     # Pi pin 19 was Boiler "lockout" - now garage water level Spare
+PIN_X       = 10     # Pi pin 19 was Boiler "lockout" - Boiler Pressure
 PIN_E       = 16     # Pi pin 36  Used to force an email to be sent
 
+# GPIO OUTPUT pin usage ......
+POUT_B      = 24     # Pi pin 18 Water level      LED(Yellow)
+POUT_S      = 25     # Pi pin 22 Sewer            LED(Blue)
+POUT_X      = 23     # Pi pin 16 Boiler  Pressure LED(White) 
+POUT_E      =  6     # Pi pin 31  NO LED attached to this pin! 
 
-POUT_B      = 24     # Pi pin 18 Water level LED(Red)
-POUT_S      = 25     # Pi pin 22 Sewer  LED(Green)
-POUT_X      = 23     # Pi pin 16  
-POUT_E      =  6     # Pi pin 31  No LED attached to this pin! 
-
-
-POUT_BLINK  = 18     # Pi pin 12 Flasing LED(Yellow)
+POUT_BLINK  = 18     # Pi pin 12 Flasing          LED(Green)
 
 # NB 1-wire networking for temperature sensors is on BCM pin 22 (Pi pin 15)
 #    As of this version all DS18B20 hex id's  are held in config.txt
 #    and read at runtime.
 
 ###### Instantiate GPIO checking objects
-chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-Water level",False)# False  indicates state of pin in NON-FAULT condition = logical 1 or 3v
-chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER" ,     False)# False sensor chaged 08/09/2023
+chk_B = gpio_input_status(PIN_B, POUT_B, PI_ID +"-Water Level",False)# False  indicates state of pin in NON-FAULT condition = logical 1 or 3v
+chk_S = gpio_input_status(PIN_S, POUT_S, PI_ID +"-SEWER MH" ,     False)# False sensor chaged 08/09/2023
 chk_X = gpio_input_status(PIN_X, POUT_X, PI_ID +"-B.PRESSURE", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 chk_E = gpio_input_status(PIN_E, POUT_E, PI_ID +"-Test Email", False)# FALSE indicates state of pin in NON-FAULT condition = logical 0 or 0v
 
