@@ -391,7 +391,7 @@ try:
         Ncount      = Ncount +1
         blinktime   = 2
         NChecks     = 4
-        sleeptime   = poll/Nchecks - blinktime 
+        sleeptime   = poll/NChecks - blinktime 
         ElapsedTime = o_DT.elapsedtime()
         	
 		# write temperature readings to log file every hour
