@@ -13,17 +13,20 @@ from  RPLCD_class import Mylcd
 
 if __name__ == '__main__':
 
-    print("LCD CTRL .....")
+    print("LCD CTRL ..............")
     lcd = Mylcd(i2c_expander='PCF8574',address=0x27)
-  
-    lcd.clear()
-    lcd.write2pos("Bingo-line 1!",pos=1,line=1)
-    sleep(2)
-    lcd.write2pos("Bingo-line 2!",pos=2,line=2)
-    sleep(2)
-    lcd.write2pos("Bingo-line 3!",pos=3,line=3)
-    sleep(2)
-    lcd.write2pos("Bingo-line 4!",pos=4,line=4)
-    sleep(2)
-    lcd.cleanup()
+    
+    option = sys.argv[1]
+    if option.lower() == "test":
+        lcd.clear()
+        lcd.write2pos("Bingo-line 1!",pos=1,line=1)
+        sleep(2)
+        lcd.write2pos("Bingo-line 2!",pos=2,line=2)
+        sleep(2)
+        lcd.write2pos("Bingo-line 3!",pos=3,line=3)
+        sleep(2)
+        lcd.write2pos("Bingo-line 4!",pos=4,line=4)
+        sleep(2)
 
+    elif option.lower() == "clear":
+        lcd.cleanup()

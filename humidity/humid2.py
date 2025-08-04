@@ -31,11 +31,12 @@ if __name__ == '__main__':
     oht = sensor.Humidity(DHT_SENSOR, DHT_PIN, DHT_PWR_PIN)
     print("RESET")
     oht.reset(offtime=10)
-    lcd = Mylcd(i2c_expander='PCF8574', address=0x27)
+    lcd = Mylcd(i2c_expander='PCF8574', address=0x27, charmap='A02')
     
     logger = DU.c_logger("/home/pi/dev/gpio/humidity/", "logyyy.txt")
     errcnt = 0
     polls  = 0
+    errdht11 = 0
     
     lcd.write2pos("Bad Reads= "+str(errcnt),4,1)   
 
@@ -53,7 +54,7 @@ if __name__ == '__main__':
                 if humid != 999:
                     # check for crazy values from DHT22
                     if humid >= 0 and humid <= 100:
-                        lcd.write2pos("Temp     = {0:0.2f}".format(temp)+chr(223)+"C", 1,1)
+                        lcd.write2pos("Temp     = {0:0.2f}".format(temp)+chr(0)+"C", 1,1)
                         lcd.write2pos("RH       = {0:0.2f}".format(humid)+" %",2,1)
                         lcd.write2pos("Poll cnt = {0:0.0f}".format(polls),3,1)
 
@@ -69,7 +70,9 @@ if __name__ == '__main__':
                     lcd.write2pos("Bad Reads= "+str(errcnt),4,1)   
                     
             else: 
-                print("Unable to read sensor dht22")
+                errdht11 = errdht11 + 1
+                logger.write("Read Errors + " +str(errdht11))
+                print("Unable to read sensor dht22 count=" +str(errdht11))
         
         except KeyboardInterrupt:
             print("\nUser abort with CTRL-C\n")

@@ -70,7 +70,7 @@ class Mylcd(CharLCD):
     def cls(self):
         self.clear()
         
-    # create custom characters - allowed id's 0 thru 7
+    # create custom characters - allowed id's are 0 thru 7
 
     def genchars(self):
         #char=0 as Degree symbol
